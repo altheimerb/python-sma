@@ -96,7 +96,7 @@ def ap_dax(filename,xmlname):
 	fityval1D = np.ravel(fityval)
 	#fixme: adjust error function to allow weighting
 
-	for i in range(0,par.apmax_fr+1,incr): #i is always a real camera frame number
+	for i in range(par.apst_fr,par.apmax_fr+1,incr): #i is always a real camera frame number
 		if i%1000 == 0:
 			print "working on : " + str(i) + " " + str(par.apmax_fr) + "at " + str(datetime.datetime.now().time())
 		
@@ -127,16 +127,21 @@ def ap_dax(filename,xmlname):
 				
 					#if appropriate, fit
 					if time_tr[j][ch,addfr[j]] > par.fit_thr:
-						p0 = np.array([float(fr_bkgd[cury,curx]), float(frame[cury,curx]), par.fit_box,par.fit_box,1.0,1.0]) #initial guess
 						#use least squares optimization
-						loc = np.ravel(frame[cury-par.fit_box:cury+par.fit_box+1,curx-par.fit_box:curx+par.fit_box+1])
+						#loc = np.ravel(frame[cury-par.fit_box:cury+par.fit_box+1,curx-par.fit_box:curx+par.fit_box+1])
+						loc = frame[cury-par.fit_box:cury+par.fit_box+1,curx-par.fit_box:curx+par.fit_box+1]
+						[yguess,xguess] = np.unravel_index(loc.argmax(),loc.shape)
+						p0 = np.array([float(fr_bkgd[cury,curx]),float(loc[yguess,xguess]),xguess,yguess,1.0,1.0])#a smarter initial guess
+						loc = np.ravel(loc)
+						#p0 = np.array([float(fr_bkgd[cury,curx]), float(frame[cury,curx]), par.fit_box,par.fit_box,1.0,1.0]) #initial guess
+
 						#print 'fitting at ' + str(datetime.datetime.now().time())
 						[p1, cov_x, infodict, mesg, success] = optimize.leastsq(errfunc,p0, args = (fitxval1D,fityval1D,loc), full_output = 1)		
 						#print 'done at' + str(datetime.datetime.now().time())
 						#fixme: confirm that this works as expected.
 						#if fit successful and center is within box, store result
 						if success>0 and success<5 and p1[2]>0 and p1[2] < (2*par.fit_box+1) and p1[3]>0 and p1[3] < (2*par.fit_box+1):
-							crds_tr[j][ch,addfr[j],:] = [p1[2]+curx-par.fit_box,p1[3]+cury-par.fit_box,p1[4],p1[5],1.0,0.0,0.0,p1[1]]
+							crds_tr[j][ch,addfr[j],:] = [p1[2]+curx-par.fit_box,p1[3]+cury-par.fit_box,abs(p1[4]),abs(p1[5]),1.0,0.0,0.0,p1[1]]
 							#for coordinates (x,y, x_stdev, y_stdev, fitting flag, quality metric, tilt angle, fit height)
 							#fixme: not using any metric of quality.
 				addfr[j] = addfr[j] + 1
