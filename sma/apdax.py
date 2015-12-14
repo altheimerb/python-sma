@@ -131,7 +131,7 @@ def ap_dax(filename,xmlname):
 						#loc = np.ravel(frame[cury-par.fit_box:cury+par.fit_box+1,curx-par.fit_box:curx+par.fit_box+1])
 						loc = frame[cury-par.fit_box:cury+par.fit_box+1,curx-par.fit_box:curx+par.fit_box+1]
 						[yguess,xguess] = np.unravel_index(loc.argmax(),loc.shape)
-						p0 = np.array([float(fr_bkgd[cury,curx]),float(loc[yguess,xguess]),xguess,yguess,1.0,1.0])#a smarter initial guess
+						p0 = np.array([float(fr_bkgd[cury,curx]),float(loc[yguess,xguess]),xguess,yguess,1.1,1.1])#a smarter initial guess
 						loc = np.ravel(loc)
 						#p0 = np.array([float(fr_bkgd[cury,curx]), float(frame[cury,curx]), par.fit_box,par.fit_box,1.0,1.0]) #initial guess
 

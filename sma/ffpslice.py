@@ -9,6 +9,7 @@ import os
 import sma_lib.np2ctimg as np2ctimg
 #import matplotlib.pyplot as plt
 from matplotlib import cm #colormaps
+import datetime
 #image could be raw frame, median filtered frameset (ORBIT), mean of some frames
 #may be entire frame or one channel of a multi-channel expt. 
 #may also be the sum of a multi-channel expt's channels.
@@ -147,7 +148,7 @@ def ffp_slice(img,frnum,par):
 		os.makedirs(d)
 	np2ctimg.saveimg(img_disp,imname, colortable = ct, autoscale = False)
 	
-	print "no_good = %d. no_keep = %d" %(no_good,no_keep)
+	print "frame: " + str(frnum) + " at " + str(datetime.datetime.now().time()) +  " -- no_good = %d. no_keep = %d" %(no_good,no_keep)
 	#put good and keep into a list to return together
 	peaks = [good[:,0:no_good],keep[:,0:no_keep]]
 	
