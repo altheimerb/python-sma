@@ -189,9 +189,11 @@ def ffp_dax(filename,xmlname):
 		np.savetxt(filename+'.pks3d',c_tosave,fmt=format,delimiter='\t')
 		
 		#make and save a histogram of the times
-		hbinnum = np.round((times.max()-times.min())/par.frameset)
+		#hbinnum = np.round((times.max()-times.min())/par.frameset)
+		p95 = np.percentile(times,95)#make histogram look reasonable - don't display the very long tail
+		hbinnum = np.round((p95 - times.min())/par.frameset)
 		if hbinnum == 0: hbinnum =1
-		hist,binedges = np.histogram(times,bins=hbinnum)
+		hist,binedges = np.histogram(times,bins=hbinnum,range = (times.min(),p95))
 		plt.plot(binedges[0:-1],hist)
 		plt.xlabel('duration,frames')
 		#plt.show()

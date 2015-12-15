@@ -11,10 +11,10 @@
   <!-- -1 for max_frame= analyze to the end -->
   <!-- or pick peaks at the beginning, eg use 0 and 9-->
   <start_frame type="int">0</start_frame>
-  <max_frame type="int">10</max_frame>
+  <max_frame type="int">100</max_frame>
   <!--frames to use during apdax analysis. set to -1 to use whole file-->
   <apst_fr type = "int">0</apst_fr>
-  <apmax_fr type = "int">10</apmax_fr>
+  <apmax_fr type = "int">100</apmax_fr>
   
   
  <!--settings which always should be checked - related to analysis type-->
