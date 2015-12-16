@@ -70,6 +70,7 @@
  <hcam_cal type = 'int'>0</hcam_cal> <!-- set to 1 to use cmos calibration-->
  <hcam_calsource type = 'string'>''</hcam_calsource> <!--file with hcam calibration-->
  <hcam_weight type = 'int'>1</hcam_weight> <!--set to 1 to use weighted fit-->
+ <fitxtol type = 'float'>0.01</fitxtol> <!--tolerance value for curvefit for fit parameters. 0.01 works-->
  
  <!--settings which are overwritten but useful to have in the parameter object-->
    <dimx type = "int">-1</dimx>

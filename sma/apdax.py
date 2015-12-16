@@ -136,7 +136,7 @@ def ap_dax(filename,xmlname):
 						#p0 = np.array([float(fr_bkgd[cury,curx]), float(frame[cury,curx]), par.fit_box,par.fit_box,1.0,1.0]) #initial guess
 
 						#print 'fitting at ' + str(datetime.datetime.now().time())
-						[p1, cov_x, infodict, mesg, success] = optimize.leastsq(errfunc,p0, args = (fitxval1D,fityval1D,loc), full_output = 1)		
+						[p1, cov_x, infodict, mesg, success] = optimize.leastsq(errfunc,p0, args = (fitxval1D,fityval1D,loc), full_output = 1,xtol=par.fitxtol)		
 						#print 'done at' + str(datetime.datetime.now().time())
 						#fixme: confirm that this works as expected.
 						#if fit successful and center is within box, store result
