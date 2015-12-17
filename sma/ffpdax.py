@@ -226,4 +226,9 @@ if __name__ == "__main__":
 	else:
 		print "usage: <movie> <parameters>"
 		exit()
+	if '.dax' in filename:
+		filename = filename[:-4]
+	if '.xml' in xmlname:
+		xmlname = xmlname[:-4]
+		
 	ffp_dax(filename,xmlname)

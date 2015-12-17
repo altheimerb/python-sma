@@ -293,4 +293,10 @@ if __name__ == "__main__":
 	else:
 		print "usage: <movie> <parameters.xml>"
 		exit()
+		
+	if '.dax' in filename:
+		filename = filename[:-4]
+	if '.xml' in xmlname:
+		xmlname = xmlname[:-4]
+		
 	ap_dax(filename,xmlname)
