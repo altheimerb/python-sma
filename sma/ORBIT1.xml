@@ -74,12 +74,12 @@
  
  
  <!--Analyze a subset of the peaks?-->
- <an_sub type='int'>2</an_sub> <!--=0 to analyze all, =1 to analyze continuous subset, =2 to analyze every subi'th peak starting at suboff-->
+ <an_sub type='int'>0</an_sub> <!--=0 to analyze all, =1 to analyze continuous subset, =2 to analyze every subi'th peak starting at suboff-->
  <subcont1 type = 'int'>-1</subcont1> <!--start of continuous block. file starts at zero.-->
  <subcont2 type = 'int'>-1</subcont2> <!--end of that block. -->
- <suboff type = 'int'>1</suboff>
- <subi type = 'int'>3</subi> <!-- take every subi peaks starting at suboff-->
- <startcut type = 'int'>10</startcut> <!--exclude events which start before this frame. default: -1. note: this happens after an_sub filtering.-->
+ <suboff type = 'int'>-1</suboff>
+ <subi type = 'int'>-1</subi> <!-- take every subi peaks starting at suboff-->
+ <startcut type = 'int'>-1</startcut> <!--exclude events which start before this frame. default: -1. note: this happens after an_sub filtering.-->
  
  <!--settings which are overwritten but useful to have in the parameter object-->
    <dimx type = "int">-1</dimx>
