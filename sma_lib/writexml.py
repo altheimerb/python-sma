@@ -35,7 +35,7 @@ def write_xml(par,outxml,antype,file,outcomes):
 		with tag("Analysis Type"):
 			text(antype)
 		with tag("Completed at"):
-			text(str(datetime.datetime.now()))
+			text(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 		with tag("on file"):
 			text(file)
 		#with tag('in folder'):

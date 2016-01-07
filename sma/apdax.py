@@ -19,7 +19,6 @@ codeversion = "20151208"
 		
 def ap_dax(filename,xmlname):
 	print "apdax started at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " on file: " + filename
-	#fixme: reduce precision on time measurement. don't need subsecond precision.
 
 	#read in the settings in the .xml file using hazen's Parameter Class
 	par = params.Parameters(xmlname+'.xml')
@@ -146,7 +145,6 @@ def ap_dax(filename,xmlname):
 	fileptr.close()
 				
 	print "saving data at" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-	#fixme: save data here.
 	if par.outtype == 0:
 		print 'not set up to save .traces file'
 	elif par.outtype ==1:
