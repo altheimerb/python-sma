@@ -7,7 +7,8 @@ def load_peaks(filename,par):
 	fileptr = open(filename,'r')
 	
 	if par.pks_type == 1 and par.emchs ==1: #pks3d, one channel
-		peaks = np.zeros((40000,5))
+		peaks = np.zeros((99999,5))
+		peaksraw = np.zeros((99999,5)) #without frame buffering
 		no_p = 0
 		xpos =0
 		ypos = 0
@@ -21,6 +22,7 @@ def load_peaks(filename,par):
 			foo,xpos,ypos,startt,stopt = line.strip().split()
 			startt = float(startt)
 			stopt = float(stopt)
+			peaksraw[no_p,:] = [float(foo),float(xpos), float(ypos), float(startt), float(stopt)]
 			startt = startt - par.buffer_fr
 			stopt = stopt + par.buffer_fr
 			if startt < par.apst_fr:
@@ -36,11 +38,34 @@ def load_peaks(filename,par):
 			peaks[no_p,:] = [float(foo),float(xpos), float(ypos), float(startt), float(stopt)]
 			#print foo, xpos, ypos, startt,stopt
 			no_p += 1;
+		peaks = peaks[0:no_p,:]
 		if no_p > 99999:
 			print "too many traces to handle in one trdir!"
-		peaks = peaks[0:no_p,:]
 		
-#FIXME: allow using only a subset of the peaks
+		
+#Allow using only a subset of the peaks
+		if par.an_sub == 1: #continuous subset
+			peaks = peaks[par.subcont1:par.subcont2+1,:]
+			peaksraw = peaksraw[par.subcont1:par.subcont2+1,:]
+
+		elif par.an_sub ==2: #every subi'th peak.
+			peaks = peaks[par.suboff:no_p+1:par.subi,:]
+			peaksraw = peaksraw[par.suboff:no_p+1:par.subi,:]
+
+		no_p = peaks.shape[0]
+		
+#allow cutting out events which start too early 
+		peaks2 = np.zeros((no_p,5))
+		no_p2 = 0
+		for i in range(0,no_p):
+			if peaksraw[i,3] >=par.startcut:
+				peaks2[no_p2,:] = peaks[i,:]
+				no_p2 +=1
+		peaks2 = peaks2[0:no_p2,:]
+		peaks = peaks2
+		no_p = no_p2
+			
+			
 
 	print no_p , " events were found in file (after filtering, if applicable)"
 	
