@@ -18,7 +18,7 @@ from scipy import optimize
 codeversion = "20151208"
 		
 def ap_dax(filename,xmlname):
-	print "apdax started at " + str(datetime.datetime.now().time()) + " on file: " + filename
+	print "apdax started at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " on file: " + filename
 	#fixme: reduce precision on time measurement. don't need subsecond precision.
 
 	#read in the settings in the .xml file using hazen's Parameter Class
@@ -98,7 +98,7 @@ def ap_dax(filename,xmlname):
 
 	for i in range(par.apst_fr,par.apmax_fr+1,incr): #i is always a real camera frame number
 		if i%1000 == 0:
-			print "working on : " + str(i) + " " + str(par.apmax_fr) + "at " + str(datetime.datetime.now().time())
+			print "working on : " + str(i) + " " + str(par.apmax_fr) + "at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 		
 		if par.ALEX4 == 0:
 			frame = loadframe.load_frame(fileptr,i,par)
@@ -135,10 +135,8 @@ def ap_dax(filename,xmlname):
 						loc = np.ravel(loc)
 						#p0 = np.array([float(fr_bkgd[cury,curx]), float(frame[cury,curx]), par.fit_box,par.fit_box,1.0,1.0]) #initial guess
 
-						#print 'fitting at ' + str(datetime.datetime.now().time())
 						[p1, cov_x, infodict, mesg, success] = optimize.leastsq(errfunc,p0, args = (fitxval1D,fityval1D,loc), full_output = 1,xtol=par.fitxtol)		
-						#print 'done at' + str(datetime.datetime.now().time())
-						#fixme: confirm that this works as expected.
+						
 						#if fit successful and center is within box, store result
 						if success>0 and success<5 and p1[2]>0 and p1[2] < (2*par.fit_box+1) and p1[3]>0 and p1[3] < (2*par.fit_box+1):
 							crds_tr[j][ch,addfr[j],:] = [p1[2]+curx-par.fit_box,p1[3]+cury-par.fit_box,abs(p1[4]),abs(p1[5]),1.0,0.0,0.0,p1[1]]
@@ -147,7 +145,7 @@ def ap_dax(filename,xmlname):
 				addfr[j] = addfr[j] + 1
 	fileptr.close()
 				
-	print "saving data at" + str(datetime.datetime.now().time())
+	print "saving data at" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 	#fixme: save data here.
 	if par.outtype == 0:
 		print 'not set up to save .traces file'
@@ -282,7 +280,7 @@ def ap_dax(filename,xmlname):
 			
 
 
-	print "apdax done at " + str(datetime.datetime.now().time()) + " on file: " + filename
+	print "apdax done at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " on file: " + filename
 
 if __name__ == "__main__":
 	#format from user: ffpdax filename xmlfile

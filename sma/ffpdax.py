@@ -21,7 +21,7 @@ codeversion = "20151208"
 #to run single, still call the script - see if statement at the very end
 	
 def ffp_dax(filename,xmlname):	
-	print "ffpdax startedd at " + str(datetime.datetime.now().time()) + " on file: " + filename
+	print "ffpdax startedd at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " on file: " + filename
 	#read in the settings in the .xml file using hazen's Parameter Class
 	par = params.Parameters(xmlname+'.xml') #par is an object of type Parameters, defined in sa_library
 	#to access parameters, use par.parameter name. eg par.start_frame
@@ -210,7 +210,7 @@ def ffp_dax(filename,xmlname):
 	#close the dax file
 	fileptr.close()
 
-	print "done at " + str(datetime.datetime.now().time())
+	print "done at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 	if par.autocont==1:
 		print 'automatically calling apdax'
