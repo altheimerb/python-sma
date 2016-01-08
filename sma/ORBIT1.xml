@@ -11,10 +11,10 @@
   <!-- -1 for max_frame= analyze to the end -->
   <!-- or pick peaks at the beginning, eg use 0 and 9-->
   <start_frame type="int">0</start_frame>
-  <max_frame type="int">10</max_frame>
+  <max_frame type="int">-1</max_frame>
   <!--frames to use during apdax analysis. set to -1 to use whole file-->
   <apst_fr type = "int">0</apst_fr>
-  <apmax_fr type = "int">10</apmax_fr>
+  <apmax_fr type = "int">-1</apmax_fr>
   
   
  <!--settings which always should be checked - related to analysis type-->
@@ -47,7 +47,7 @@
   <!--this works poorly if there are initially no spots-->
 
  <!--settings specific to .pks3d generation-->
- <frameset type = "ulong">10</frameset> <!--how many frames to look at at a time?-->
+ <frameset type = "ulong">100</frameset> <!--how many frames to look at at a time?-->
 <dist_thr type = "float">3</dist_thr> <!--how far part can peaks be and still be the same active event-->
 <length_thr type = "ulong">0</length_thr> <!--min length for 'accepted' events-->
 <max_len type = "ulong">1000000</max_len> <!--max length for events. set really high to turn off-->
@@ -71,7 +71,7 @@
  <hcam_calsource type = 'string'>''</hcam_calsource> <!--file with hcam calibration-->
  <hcam_weight type = 'int'>1</hcam_weight> <!--set to 1 to use weighted fit-->
  <fitxtol type = 'float'>0.01</fitxtol> <!--tolerance value for curvefit for fit parameters. 0.01 works-->
- 
+ <outputpartial type = 'int'>100000000</outputpartial> <!--outtput the .trdir every this many frames during analysis. these partial outputs get overwritten-->
  
  <!--Analyze a subset of the peaks?-->
  <an_sub type='int'>0</an_sub> <!--=0 to analyze all, =1 to analyze continuous subset, =2 to analyze every subi'th peak starting at suboff-->
