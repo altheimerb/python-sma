@@ -67,7 +67,7 @@ def load_peaks(filename,par):
 #if ignore_bounds = 1, reset the start and stop times
 		if par.ignore_bounds == 1:
 			peaks[:,3] = 0
-			peaks[:,4] = par.max_frame
+			peaks[:,4] = par.apmax_fr
 			print 'ignoring bounds from peak picking...'
 			
 			
