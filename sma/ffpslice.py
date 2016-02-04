@@ -35,6 +35,7 @@ for i in range(0,256):
 		#ct[j,i] = cm.nipy_spectral(i)[j]*255
 		ct[j,i] = cm.CMRmap(i)[j]*255 #THIS ONE LOOKS GOOD.
 
+#this could be given only a part of the field of view.  all found coordinates will be relative to passed img, not whole fov in that case.
 def ffp_slice(img,frnum,par):
 	dimx = img.shape[1]
 	dimy = img.shape[0] #not necessarily the same as the camera's whole frame
@@ -62,7 +63,7 @@ def ffp_slice(img,frnum,par):
 					dist = 0.4 * ((float(j) - 3.0 + offx)**2 + (float(i) - 3.0 + offy)**2)
 					g_peaks[k,l,i,j] = 2.0*math.exp(-dist)
 	
-	#remove all pixels below threshold
+	#set to zero all pixels below threshold
 	for i in range(0,dimx):
 		for j in range(0,dimy):
 			if(img_g[j,i] < thresh): img_g[j,i] = 0
@@ -157,6 +158,7 @@ def ffp_slice(img,frnum,par):
 
 #function which uses a different type of threshold to decide whether items on the active list should be kept. uses intensity only.
 #prevlist: peak positions to check.
+#this could be given only a part of the field of view.  coordinates passed need to be relative to img, not necessarily whole fov
 def ffp_keep(img,frnum,par,prevlist):
 	no_act = prevlist.shape[1]
 	#print "no active in ffp_keep: %i" %no_act

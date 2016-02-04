@@ -16,6 +16,10 @@
   <apst_fr type = "int">0</apst_fr>
   <apmax_fr type = "int">-1</apmax_fr>
   
+  <!--mapping-->
+  <mapfilel2r type = 'string'>'C:\Users\B\Documents\Zhuang Lab\Analysis Code\sma_data_prism3\SLIDE 3\bead0thru4.dax.brmap'</mapfilel2r> <!--Req'd if emchs =2-->
+  <mapfiler2l type = 'string'>'C:\Users\B\Documents\Zhuang Lab\Analysis Code\sma_data_prism3\SLIDE 3\bead0thru4.dax.rbmap'</mapfiler2l> <!--Req'd if emchs =2-->
+  <mapdeg type = 'int'>3</mapdeg> <!-- degree of polynomial mapping-->
   
  <!--settings which always should be checked - related to analysis type-->
  <d3peaks type = "int">1</d3peaks> <!--output .pks3d file if 1-->
@@ -45,6 +49,9 @@
  <disp_fact type = "float">400</disp_fact> <!--divide image by this, then multiply by 255-->
  <det_disp_set type = "int">0</det_disp_set> <!--set to 1 to determine the two above settings from the image itself-->
   <!--this works poorly if there are initially no spots-->
+  
+  <!--more settings for peak finding-->
+  <pickchan type ='int'>0</pickchan> <!--if there are two emission channels --pickchan =0 is left channel, pickchan =1 is right channel (higher index), pickchan = 2 is combined-->
 
  <!--settings specific to .pks3d generation-->
  <frameset type = "ulong">100</frameset> <!--how many frames to look at at a time?-->

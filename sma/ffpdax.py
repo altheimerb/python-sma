@@ -1,6 +1,15 @@
 #ffpdax: primary script for finding fluorescence peaks in .dax files
 #for single molecule analyis
 
+#mapping : http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html
+#http://www.scipy-lectures.org/packages/scikit-image/
+#download windows binary: http://www.lfd.uci.edu/~gohlke/pythonlibs/#scikit-image
+#http://scikit-image.org/docs/dev/api/skimage.transform.html#skimage.transform.PolynomialTransform
+#https://github.com/scikit-image/scikit-image/blob/master/skimage/transform/_geometric.py#L751
+
+#or, http://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.geometric_transform.html#scipy.ndimage.geometric_transform
+#can compare to IDL mapping function : http://www.exelisvis.com/docs/POLY_2D.html
+
 #format from user: ffpdax filename xmlfile
 import sys
 import numpy as np
@@ -15,7 +24,9 @@ import sma_lib.writexml as writexml
 import matplotlib.pyplot as plt
 import datetime
 import os
-codeversion = "20151208"
+from skimage import transform 
+import sma_lib.mapcoords.map_coords as map_coords
+codeversion = "20160203"
 
 #12/8/15 - changed architecture to allow multithreading. 
 #to run single, still call the script - see if statement at the very end
@@ -34,13 +45,47 @@ def ffp_dax(filename,xmlname):
 
 	print "x pixels: %d. y pixels: %d" %(par.dimx,par.dimy)
 
+	#FIXME: if emchs > 1, load mapping --> mapl2r
+	if emchs == 2:
+		#read in mapping files
+		file_l2r = open(par.mapfilel2r,'r')
+		mapl2r = np.zeros(2*((deg+1)**2))
+		i=0
+		for line in file_l2r:
+			mapl2r[i] = float(line)
+			i +=1
+		np.reshape(mapl2r,(2,(deg+1)**2)) #FIXME -- check that this is right! compare to text file.
+		#define left --> right transform
+		tforml2r = transform.PolynomialTransform(mapl2r)
+		
+		file_r2l = open(par.mapfiler2l,'r')
+		mapr2l = np.zeros(2*((deg+1)**2))
+		i=0
+		for line in file_r2l:
+			mapr2l[i] = float(line)
+			i +=1
+		np.reshape(mapr2l,(2,(deg+1)**2)) #FIXME -- check that this is right! compare to text file.
+		#define left --> right transform
+		tformr2l = transform.PolynomialTransform(mapr2l)		
+		
+		#make arrays for mapping coordinates too 
+		Pl2r = mapl2r[0,:]
+		Ql2r = mapl2r[1,:]
+		np.reshape(Pl2r,(4,4))
+		np.reshape(Qlr2,(4,4)) #do these have the right orientation?
+		
+		Pr2l = mapr2l[0,:]
+		Qr2l = mapr2l[1,:]
+		np.reshape(Pr2l,(4,4))
+		np.reshape(Qr2l,(4,4)) #do these have the right orientation?
+	
 	fileptr = open(filename+'.dax','rb')
 	#open the dax file
 	#print "Filename: ", fileptr.name
 	if par.d3peaks == 1:
 		no_sets = long(math.floor(float(par.max_frame - par.start_frame + 1) / float(par.frameset)))
 		#arrays for the pks data
-		active = np.zeros((3,6000))
+		active = np.zeros((3,50000))
 		complete = np.zeros((4,50000))
 		#keep track of how many active, complete
 		no_a = 0 #number active 
@@ -53,16 +98,13 @@ def ffp_dax(filename,xmlname):
 		for i in range(0,no_sets): #goes from 0 to no_sets -1
 			if i % 1000 == 0: print "working on %i"  %i #keep track of progress
 			for k in range(0,par.frameset):
-				frame = loadframe.load_frame(fileptr,currset_st+k,par)
-				if par.emchs ==1: 
-					pass
-				else:
-					print "Not set up for more than one emission channel"
+				frame = loadframe.load_frame(fileptr,currset_st+k,par)	
 				#im =Image.fromarray(frame)
 				#im.show()
 				frame.astype(float) #change to float
 				frames[:,:,k] = frame
-			#if ALEX =1, pick out subset of frames to be used, based on pickcol. otherwise, use all frames
+				
+			#if ALEX4 =1, pick out subset of frames to be used, based on pickcol. otherwise, use all frames
 			if par.ALEX4 ==1:
 				if par.pickcol == 0:
 					rframes = np.zeros((par.dimy,par.dimx,(par.frameset)/4))
@@ -78,35 +120,41 @@ def ffp_dax(filename,xmlname):
 						rframes[:,:,k/2] = (frames[:,:,k]+frames[:,:,k+1])/2
 				else:
 					print "That's not a pickcol option!"
-					break
-					
+					break	
 			else:
 				rframes = frames
+				
+					
 				
 			#next, median filter the frames in the frameset
 			medimg = np.median(rframes, axis = 2)	
 			
-			
-			
+			#deal with multiple emission channels -- either use one, or combine after mapping.
+			if par.emchs ==1: 
+					pass #one channel - no subset is picked out.
+				elif par.emchs ==2:
+					print 'partially set up'
+					if par.pickchan ==0: #'left' channel
+						medimg = medimg[:,0:par.dimx/2]
+					elif par.pickchan ==1: #'right' channel
+						medimg = medimg[:,par.dimx/2:par.dimx]
+					elif par.pickchan ==2: #combine channels after warping. Using the 'left' channel coordinates
+						print 'have not checked that this works yet!'
+						medimg = medimg[:,0:par.dimx/2] + transform.warp(medimg[:,par.dimx/2:par.dimx],tformr2l)
+						#FIXME: make sure this is being done right.
+				else:
+					print "Not set up for more than two emission channel"		
 			
 			#background for medimg
 			fr_bk = smbkgr.sm_bkgr(medimg,par.bksize) #seems okay; check once showing images added
 			medimg = medimg-fr_bk
 
-			
 			#scale the med_img for display. for convenience, also find peaks in the scaled image
 			medimg=255.0*(medimg+par.disp_off)/par.disp_fact 
 			#requires scaling factors to be known ahead of time. tricky to pick out of the data -often nothing present at the begining
-			#im = Image.fromarray(frame)
-			#im.show()
-			#im = Image.fromarray(medimg.astype('int'))
-			#im.show()
-			#im.save('test.png')
-			#im.close()
 			#ready to go find peaks!
-			sliceresult = ffpslice.ffp_slice(medimg,currset_st,par)
+			sliceresult = ffpslice.ffp_slice(medimg,currset_st,par) #these are all 'raw' results in medimg frame. Wait until the very end to map, if needed
 			current = sliceresult[0]
-			
 			
 			#add current peaks to active unless they are already present
 			no_cu = current.shape[1]
@@ -128,7 +176,7 @@ def ffp_dax(filename,xmlname):
 			
 			#move peaks from active to complete if they aren't found in keep
 			n_t = 0 #number moved
-			temp_active = np.zeros((3,10000))
+			temp_active = np.zeros((3,50000))
 			if par.keeptype == 0: 
 				for a in range(0,no_a): #for each active peak, look through keep to decide whether to keep it active
 					keep = sliceresult[1]
@@ -173,15 +221,32 @@ def ffp_dax(filename,xmlname):
 				complete[3,no_com] = float(par.max_frame)
 				no_com += 1
 		
+		
 		if no_com > 0:
 			print "there were %d events" %no_com
 			times = complete[3,0:no_com] - complete[2,0:no_com]
 			print 'average event length: %f' %float(np.mean(times))
 			print 'median event length: %f' %float(np.median(times))
-
+		
+		#now, if appropriate, map the values
+		if emchs ==1:
+			pass
+		elif emchs == 2:
+			print 'final mapping not checked yet! careful!'
+			#mapping - have 'left' coordinates; need 'right' channel coordinates too
+			#first, expand complete to have space for more coordinates.
+			bigcomplete = np.zeros((6,50000))
+			bigcomplete[0:2,:] = complete[0:2,:]
+			bigcomplete[4:6,:] = complete[4:6,:]]
+			#fixme - check that this looks right.  rows 2 and 3 for mapped coordinates
+			for a in range(0,no_a):
+				bigcomplete[3:5,no_a]=map_coords(bigcomplete[0,no_a],bigcomplete[1,no_a],Pr2l,Qr2l)
+			complete = bigcomplete
+			
+			
 		#save output as text file
-		c_tosave = np.zeros((5,no_com))
-		c_tosave[1:5,:] = complete[:,0:no_com]
+		c_tosave = np.zeros((complete.shape[0],no_com))
+		c_tosave[1:complete.shape[0],:] = complete[:,0:no_com]
 		for i in range(0,no_com):
 			c_tosave[0,i] =i 
 		c_tosave = np.transpose(c_tosave)
