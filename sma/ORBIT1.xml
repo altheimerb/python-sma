@@ -11,14 +11,14 @@
   <!-- -1 for max_frame= analyze to the end -->
   <!-- or pick peaks at the beginning, eg use 0 and 9-->
   <start_frame type="int">0</start_frame>
-  <max_frame type="int">-1</max_frame>
+  <max_frame type="int">10</max_frame>
   <!--frames to use during apdax analysis. set to -1 to use whole file-->
   <apst_fr type = "int">0</apst_fr>
   <apmax_fr type = "int">-1</apmax_fr>
   
   <!--mapping-->
-  <mapfilel2r type = 'string'>'C:\Users\B\Documents\Zhuang Lab\Analysis Code\sma_data_prism3\SLIDE 3\bead0thru4.dax.brmap'</mapfilel2r> <!--Req'd if emchs =2-->
-  <mapfiler2l type = 'string'>'C:\Users\B\Documents\Zhuang Lab\Analysis Code\sma_data_prism3\SLIDE 3\bead0thru4.dax.rbmap'</mapfiler2l> <!--Req'd if emchs =2-->
+  <mapfilel2r type = 'string'>O:\Imaging Data\code testing\bead0thru4.dax.brmap</mapfilel2r> <!--Req'd if emchs =2-->
+  <mapfiler2l type = 'string'>O:\Imaging Data\code testing\bead0thru4.dax.rbmap</mapfiler2l> <!--Req'd if emchs =2-->
   <mapdeg type = 'int'>3</mapdeg> <!-- degree of polynomial mapping-->
   
  <!--settings which always should be checked - related to analysis type-->
@@ -27,7 +27,7 @@
  <ALEX4 type = "int">0</ALEX4> <!--alternating laser with 4 frame sequence - CMOS. 1 for on-->
  <pks_type type = 'int'>1</pks_type> <!--input for apdax. =0 for .pks file. =1 for pks3d file-->
  <outtype type = 'int'>1</outtype> <!--output for apdax. =0 for .traces. =1 for trdir-->
- <autocont type = 'int'>1</autocont> <!-- = 1 to automatically call apdax from ffpdax-->
+ <autocont type = 'int'>0</autocont> <!-- = 1 to automatically call apdax from ffpdax-->
  
  <!--data source settings-->
  <from_hal type="int">1</from_hal> <!--set to 0 if from labView-->
@@ -51,10 +51,10 @@
   <!--this works poorly if there are initially no spots-->
   
   <!--more settings for peak finding-->
-  <pickchan type ='int'>0</pickchan> <!--if there are two emission channels --pickchan =0 is left channel, pickchan =1 is right channel (higher index), pickchan = 2 is combined-->
+  <pickchan type = 'int'>0</pickchan> <!--if there are two emission channels. pickchan =0 is left channel, pickchan =1 is right channel (higher index), pickchan = 2 is combined-->
 
  <!--settings specific to .pks3d generation-->
- <frameset type = "ulong">100</frameset> <!--how many frames to look at at a time?-->
+ <frameset type = "ulong">10</frameset> <!--how many frames to look at at a time?-->
 <dist_thr type = "float">3</dist_thr> <!--how far part can peaks be and still be the same active event-->
 <length_thr type = "ulong">0</length_thr> <!--min length for 'accepted' events-->
 <max_len type = "ulong">1000000</max_len> <!--max length for events. set really high to turn off-->

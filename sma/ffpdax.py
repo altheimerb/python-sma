@@ -10,6 +10,10 @@
 #or, http://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.geometric_transform.html#scipy.ndimage.geometric_transform
 #can compare to IDL mapping function : http://www.exelisvis.com/docs/POLY_2D.html
 
+
+#as is: 2 channel sort of works, just without any mapping. assumes just an offset. not actually useful yet.
+#FIXME: MAPPING
+
 #format from user: ffpdax filename xmlfile
 import sys
 import numpy as np
@@ -25,7 +29,7 @@ import matplotlib.pyplot as plt
 import datetime
 import os
 from skimage import transform 
-import sma_lib.mapcoords.map_coords as map_coords
+import sma_lib.mapcoords as mapcoords
 codeversion = "20160203"
 
 #12/8/15 - changed architecture to allow multithreading. 
@@ -46,38 +50,39 @@ def ffp_dax(filename,xmlname):
 	print "x pixels: %d. y pixels: %d" %(par.dimx,par.dimy)
 
 	#FIXME: if emchs > 1, load mapping --> mapl2r
-	if emchs == 2:
+	if par.emchs == 2:
 		#read in mapping files
 		file_l2r = open(par.mapfilel2r,'r')
-		mapl2r = np.zeros(2*((deg+1)**2))
+		mapl2r = np.zeros(2*((par.mapdeg+1)**2))
 		i=0
 		for line in file_l2r:
 			mapl2r[i] = float(line)
 			i +=1
-		np.reshape(mapl2r,(2,(deg+1)**2)) #FIXME -- check that this is right! compare to text file.
+		mapl2r = np.reshape(mapl2r,(2,(par.mapdeg+1)**2)) #FIXME -- check that this is right! compare to text file.
 		#define left --> right transform
-		tforml2r = transform.PolynomialTransform(mapl2r)
+		#tforml2r = transform.PolynomialTransform(mapl2r)
+		#!!!!FORMAT IS DIFFERENT THAN IDL MAPPING. NOT COMPATIBLE!
 		
 		file_r2l = open(par.mapfiler2l,'r')
-		mapr2l = np.zeros(2*((deg+1)**2))
+		mapr2l = np.zeros(2*((par.mapdeg+1)**2))
 		i=0
 		for line in file_r2l:
 			mapr2l[i] = float(line)
 			i +=1
-		np.reshape(mapr2l,(2,(deg+1)**2)) #FIXME -- check that this is right! compare to text file.
+		mapr2l = np.reshape(mapr2l,(2,(par.mapdeg+1)**2)) #FIXME -- check that this is right! compare to text file.
 		#define left --> right transform
-		tformr2l = transform.PolynomialTransform(mapr2l)		
+		#tformr2l = transform.PolynomialTransform(mapr2l)		
 		
 		#make arrays for mapping coordinates too 
 		Pl2r = mapl2r[0,:]
 		Ql2r = mapl2r[1,:]
-		np.reshape(Pl2r,(4,4))
-		np.reshape(Qlr2,(4,4)) #do these have the right orientation?
+		Pl2r = np.reshape(Pl2r,(4,4))
+		Ql2r = np.reshape(Ql2r,(4,4)) #do these have the right orientation?
 		
 		Pr2l = mapr2l[0,:]
 		Qr2l = mapr2l[1,:]
-		np.reshape(Pr2l,(4,4))
-		np.reshape(Qr2l,(4,4)) #do these have the right orientation?
+		Pr2l = np.reshape(Pr2l,(4,4))
+		Qr2l = np.reshape(Qr2l,(4,4)) #do these have the right orientation?
 	
 	fileptr = open(filename+'.dax','rb')
 	#open the dax file
@@ -131,19 +136,20 @@ def ffp_dax(filename,xmlname):
 			
 			#deal with multiple emission channels -- either use one, or combine after mapping.
 			if par.emchs ==1: 
-					pass #one channel - no subset is picked out.
-				elif par.emchs ==2:
-					print 'partially set up'
-					if par.pickchan ==0: #'left' channel
-						medimg = medimg[:,0:par.dimx/2]
-					elif par.pickchan ==1: #'right' channel
-						medimg = medimg[:,par.dimx/2:par.dimx]
-					elif par.pickchan ==2: #combine channels after warping. Using the 'left' channel coordinates
-						print 'have not checked that this works yet!'
-						medimg = medimg[:,0:par.dimx/2] + transform.warp(medimg[:,par.dimx/2:par.dimx],tformr2l)
-						#FIXME: make sure this is being done right.
-				else:
-					print "Not set up for more than two emission channel"		
+				pass #one channel - no subset is picked out.
+			elif par.emchs ==2:
+				print 'partially set up'
+				if par.pickchan ==0: #'left' channel
+					medimg = medimg[:,0:par.dimx/2]
+				elif par.pickchan ==1: #'right' channel
+					medimg = medimg[:,par.dimx/2:par.dimx]
+				elif par.pickchan ==2: #combine channels after warping. Using the 'left' channel coordinates
+					print 'have not checked that this works yet!'
+					#medimg = medimg[:,0:par.dimx/2] + transform.warp(medimg[:,par.dimx/2:par.dimx],tformr2l)
+					medimg = medimg[:,0:par.dimx/2] + medimg[:,par.dimx/2:par.dimx] #FOR TESTING ONLY. NOT WARPED
+					#FIXME: make sure this is being done right.
+			else:
+				print "Not set up for more than two emission channel"		
 			
 			#background for medimg
 			fr_bk = smbkgr.sm_bkgr(medimg,par.bksize) #seems okay; check once showing images added
@@ -229,28 +235,32 @@ def ffp_dax(filename,xmlname):
 			print 'median event length: %f' %float(np.median(times))
 		
 		#now, if appropriate, map the values
-		if emchs ==1:
+		if par.emchs ==1:
 			pass
-		elif emchs == 2:
+		elif par.emchs == 2:
 			print 'final mapping not checked yet! careful!'
 			#mapping - have 'left' coordinates; need 'right' channel coordinates too
 			#first, expand complete to have space for more coordinates.
 			bigcomplete = np.zeros((6,50000))
 			bigcomplete[0:2,:] = complete[0:2,:]
-			bigcomplete[4:6,:] = complete[4:6,:]]
+			bigcomplete[4:6,:] = complete[2:4,:]
 			#fixme - check that this looks right.  rows 2 and 3 for mapped coordinates
 			for a in range(0,no_a):
-				bigcomplete[3:5,no_a]=map_coords(bigcomplete[0,no_a],bigcomplete[1,no_a],Pr2l,Qr2l)
+				#bigcomplete[3:5,no_a]=mapcoords.map_coords(bigcomplete[0,no_a],bigcomplete[1,no_a],Pr2l,Qr2l)
+				bigcomplete[2,a] = bigcomplete[0,a] + par.dimx/2
+				bigcomplete[3,a] = bigcomplete[1,a]
 			complete = bigcomplete
 			
 			
 		#save output as text file
-		c_tosave = np.zeros((complete.shape[0],no_com))
-		c_tosave[1:complete.shape[0],:] = complete[:,0:no_com]
+		c_tosave = np.zeros((complete.shape[0]+1,no_com))
+		c_tosave[1:complete.shape[0]+1,:] = complete[:,0:no_com]
 		for i in range(0,no_com):
 			c_tosave[0,i] =i 
 		c_tosave = np.transpose(c_tosave)
 		format = ['%- i','%-.1f','%-.1f','%-.1f','%-.1f']
+		if par.emchs ==2:
+			format = ['%- i','%-.1f','%-.1f','%-.1f','%-.1f','%-.1f','%-.1f']
 		np.savetxt(filename+'.pks3d',c_tosave,fmt=format,delimiter='\t')
 		
 		#make and save a histogram of the times
