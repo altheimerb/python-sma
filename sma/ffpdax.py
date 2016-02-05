@@ -28,8 +28,8 @@ import sma_lib.writexml as writexml
 import matplotlib.pyplot as plt
 import datetime
 import os
-from skimage import transform 
-import sma_lib.mapcoords as mapcoords
+#from skimage import transform 
+#import sma_lib.mapcoords as mapcoords
 codeversion = "20160203"
 
 #12/8/15 - changed architecture to allow multithreading. 
