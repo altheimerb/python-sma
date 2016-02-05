@@ -1,6 +1,6 @@
 SMA - Single Molecule Analysis
 BDA 10/22/15 UNDER DEVELOPMENT
-Updated 2/4/16 - developing for 2 channel data. NOT TESTED
+Updated 2/4/16 - developing for 2 channel data. IN PROGRESS. currently, can generate 2 channel .pks3d file. But, no mapping is applied - assumes half frame offset. Keep emchs =1 and it works fine for real data analysis.
 
 Dependencies - See Storm analysis and DAOSTORM analysis requirements. You should be able to run STORM analysis using the sample data in the 3d_daostorm directory before trying to use this code.
 https://github.com/ZhuangLab/storm-analysis
