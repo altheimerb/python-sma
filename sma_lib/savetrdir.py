@@ -97,42 +97,42 @@ def save_trdir(filename, par, peaks, time_tr, crds_tr,done):
 			temp.tofile(trpt)
 		elif par.ALEX4 ==1:#save color1,then color2
 		#color1
-			temp = timetr[:,0:-2:2]
+			temp = ctimetr[:,0:-1:2]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-2:2,0]
+			temp = ccrdstr[:,0:-1:2,0]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-2:2,1]
+			temp = ccrdstr[:,0:-1:2,1]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-2:2,2]
+			temp = ccrdstr[:,0:-1:2,2]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-2:2,3]
+			temp = ccrdstr[:,0:-1:2,3]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-2:2,4]
+			temp = ccrdstr[:,0:-1:2,4]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-2:2,5]
+			temp = ccrdstr[:,0:-1:2,5]
 			temp.tofile(trpt)	
-			temp = ccrdstr[:,0:-2:2,6]
+			temp = ccrdstr[:,0:-1:2,6]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-2:2,7]
+			temp = ccrdstr[:,0:-1:2,7]
 			temp.tofile(trpt)	
 		#color2	
-			temp = timetr[:,1:-1:2]
+			temp = ctimetr[:,1::2]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1:-1:2,0]
+			temp = ccrdstr[:,1::2,0]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1:-1:2,1]
+			temp = ccrdstr[:,1::2,1]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1:-1:2,2]
+			temp = ccrdstr[:,1::2,2]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1:-1:2,3]
+			temp = ccrdstr[:,1::2,3]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1:-1:2,4]
+			temp = ccrdstr[:,1::2,4]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1:-1:2,5]
+			temp = ccrdstr[:,1::2,5]
 			temp.tofile(trpt)	
-			temp = ccrdstr[:,1:-1:2,6]
+			temp = ccrdstr[:,1::2,6]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1:-1:2,7]
+			temp = ccrdstr[:,1::2,7]
 			temp.tofile(trpt)	
 			
 		trpt.close()
