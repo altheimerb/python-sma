@@ -11,14 +11,14 @@
   <!-- -1 for max_frame= analyze to the end -->
   <!-- or pick peaks at the beginning, eg use 0 and 9-->
   <start_frame type="int">0</start_frame>
-  <max_frame type="int">10</max_frame>
+  <max_frame type="int">-1</max_frame>
   <!--frames to use during apdax analysis. set to -1 to use whole file-->
   <apst_fr type = "int">0</apst_fr>
   <apmax_fr type = "int">-1</apmax_fr>
   
   <!--mapping-->
-  <mapfilel2r type = 'string'>O:\Imaging Data\code testing\bead0thru4.dax.brmap</mapfilel2r> <!--Req'd if emchs =2-->
-  <mapfiler2l type = 'string'>O:\Imaging Data\code testing\bead0thru4.dax.rbmap</mapfiler2l> <!--Req'd if emchs =2-->
+  <mapfilel2r type = 'string'>O:\Imaging Data\prism3data\beads512\bead0thru4.dax.brmap</mapfilel2r> <!--Req'd if emchs =2-->
+  <mapfiler2l type = 'string'>O:\Imaging Data\prism3data\beads512\bead0thru4.dax.rbmap</mapfiler2l> <!--Req'd if emchs =2-->
   <mapdeg type = 'int'>3</mapdeg> <!-- degree of polynomial mapping-->
   
  <!--settings which always should be checked - related to analysis type-->
@@ -32,7 +32,7 @@
  <!--data source settings-->
  <from_hal type="int">1</from_hal> <!--set to 0 if from labView-->
  <hal_info type="int">1</hal_info> <!--set to 1 read in key info from hal directly-->
- <endian type = "int">1</endian> <!--storage type. 1 for big endian. different for storm2 and prism3!-->
+ <endian type = "int">0</endian> <!--storage type. 0 for little endian (hal); 1 for big endian (labview)-->
   
    <!-- Film parameters -->
 

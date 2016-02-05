@@ -11,6 +11,7 @@ def fix_par(par,filename,antype):
 	par.frameset = long(par.frameset)
 	par.max_len = long(par.max_len)
 	par.length_thr = long(par.length_thr)
+	#FIXME: setup to read in similar info from the labview (prism3) setup file.
 	
 	if par.hal_info : #read in values from .setup file.
 		#define what we're looking for in the setup file
