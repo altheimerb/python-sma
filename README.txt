@@ -5,7 +5,7 @@ Updated 2/4/16 - developing for 2 channel data. NOT TESTED
 Dependencies - See Storm analysis and DAOSTORM analysis requirements. You should be able to run STORM analysis using the sample data in the 3d_daostorm directory before trying to use this code.
 https://github.com/ZhuangLab/storm-analysis
 Also requires yattag - www.yattag.org
-And Scikit-image http://scikit-image.org/
+And Scikit-image http://scikit-image.org/, which in turn requires cython.
 
 Maybe later I'll try to pare down to what is really needed from STORM analysis
 
