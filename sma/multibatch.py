@@ -1,19 +1,15 @@
-#TO DO: run multiple sma analyses in parallel. Not as simple as I thought! Giving error:  
-#PyEval_RestoreThread: NULL tstate. Hitting debug option gives more: unhandled win32 exception occured in python.exe
-#I believe the problem is related to how resources are handled during threading?
-#for now, use this as a simple batch file
-#Remember: Don't be greedy!
-#from multiprocessing import Process
+from multiprocessing import Pool
+import itertools
 from ffpdax import ffp_dax
-from apdax import ap_dax
 
-if __name__ == "__main__":
-	#files = ['C:\Users\B\Documents\Zhuang Lab\Analysis Code\storm-analysis-master\sma_data\movie_0003']
-	#xmls = ['C:\Users\B\Documents\Zhuang Lab\Analysis Code\storm-analysis-master\sma\ORBIT1']
-#	p = Process(target=ffp_dax,args=(files[0],xmls[0]))
-#	p.start()
-#	p.join()
-
-	#ffp_dax(PUTFILEHERE,PUTSETTINGSHERE)
+def ffp_daxunpack(details):
+	ffp_dax(*details)
+	#http://stackoverflow.com/questions/5442910/python-multiprocessing-pool-map-for-multiple-arguments
 	
-	print 'all done!'
+#Remember: don't be greedy! but I think this'll only let you run four processes
+if __name__ == "__main__":
+	files = ['C:\Users\B\Documents\Zhuang Lab\Analysis Code\storm-analysis-master\sma_data\movie_0003','C:\Users\B\Documents\Zhuang Lab\Analysis Code\storm-analysis-master\sma_data\movie_0003']
+	xmls = ['C:\Users\B\Documents\Zhuang Lab\Analysis Code\storm-analysis-master\sma\ORBIT1','C:\Users\B\Documents\Zhuang Lab\Analysis Code\storm-analysis-master\sma\ORBIT1']
+	analysis = "C:\\Users\\B\\Documents\\Zhuang Lab\\Analysis Code\\storm-analysis-master\\sma\\ffpdax.py"
+	p = Pool(processes = 4)#allow up to four processes
+	p.map(ffp_daxunpack, itertools.izip(files, xmls))

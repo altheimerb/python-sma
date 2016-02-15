@@ -18,7 +18,7 @@ def map_coords(x,y,P,Q):
 	
 	
 #generate mapx and map for opencv mapping. using IDL style.
-#note format is (x,y) to be consistent with elsewhere - input as map[y,x]
+#note format is (y,x) to be consistent with elsewhere - input as map[y,x]
 #indices are the (y,x) values in the destination image (mapped); 
 #entries are the source pixel, either x or y depending on which array
 def genmapxy(par,P,Q):
@@ -43,6 +43,8 @@ def genmapxy(par,P,Q):
 		for j in range (0,par.mapdeg+1):
 			mapx += P[i,j] * (origx**i) * (origy**j)
 			mapy += Q[i,j] * (origx**i) * (origy**j)
+	#format: mapx[i,j]: value is the x coordinate in the source of the point (i,j) in the image.
+	
 	
 	
 	return mapx,mapy
@@ -70,6 +72,8 @@ def readmapping(par,direction):
 #take single row/column mapping information and format for easy transform according to IDL's poly2D algorithm.
 #for now, assumes input is from IDL polywarp. 
 #FIXME: determine input type based on number elts; pad with zeros if higher order crossterms missing. (new python mapping code, probably)
+#Confirmed that this outputs P,Q
+#P[i,j] here is the same as P[j,i] in IDL code (since IDL and python index differently)
 def mapformatIDL(maplist,deg):
 	Plin = maplist[0:(deg+1)**2]
 	Qlin = maplist[(deg+1)**2::]

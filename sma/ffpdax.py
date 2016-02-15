@@ -21,7 +21,7 @@ import os
 import cv2
 #from skimage import transform 
 import sma_lib.mapcoords as mapcoords
-codeversion = "20160203"
+codeversion = "20160215"
 
 #12/8/15 - changed architecture to allow multithreading. 
 #to run single, still call the script - see if statement at the very end
@@ -104,7 +104,6 @@ def ffp_dax(filename,xmlname):
 			if par.emchs ==1: 
 				pass #one channel - no subset is picked out.
 			elif par.emchs ==2:
-				print 'partially set up'
 				if par.pickchan ==0: #'left' channel
 					medimg = medimg[:,0:par.dimx/2]
 				elif par.pickchan ==1: #'right' channel; still find peaks in left coords so we get both.
@@ -115,7 +114,7 @@ def ffp_dax(filename,xmlname):
 					rightmapped = cv2.remap(src,mapxl2rCV,mapyl2rCV,interpolation = cv2.INTER_CUBIC)
 					medimg = rightmapped[:,:,0]
 				elif par.pickchan ==2: #combine channels after warping. Using the 'left' channel coordinates
-					print 'have not checked that this works yet!'
+					print 'warping is lightly tested. Appears to work.'
 					#medimg = medimg[:,0:par.dimx/2] + transform.warp(medimg[:,par.dimx/2:par.dimx],tformr2l)
 					#medimg = medimg[:,0:par.dimx/2] + medimg[:,par.dimx/2:par.dimx] #FOR TESTING ONLY. NOT WARPED
 					#templeft = medimg[:,0:par.dimx/2]
@@ -124,6 +123,7 @@ def ffp_dax(filename,xmlname):
 					src[:,:,0] = medimg[:,par.dimx/2:par.dimx]
 					mapyl2rCV = mapyl2r.astype(np.float32)
 					mapxl2rCV = mapxl2r.astype(np.float32)
+					rightmapped = cv2.remap(src,mapxl2rCV,mapyl2rCV,interpolation = cv2.INTER_CUBIC)
 					rightmapped = cv2.remap(src,mapxl2rCV,mapyl2rCV,interpolation = cv2.INTER_CUBIC)
 					#medimg = medimg[:,0:par.dimx/2] + cv2.remap(rightch,mapyl2r,mapxl2r,interpolation = cv2.INTER_CUBIC)
 					medimg = medimg[:,0:par.dimx/2] + rightmapped[:,:,0]
@@ -141,6 +141,7 @@ def ffp_dax(filename,xmlname):
 			sliceresult = ffpslice.ffp_slice(medimg,currset_st,par) #these are all 'raw' results in medimg frame. Wait until the very end to map, if needed
 			current = sliceresult[0]
 			
+			#fixme: if number ch > 1, somewhere, output all channels with picked peaks circled
 			#add current peaks to active unless they are already present
 			no_cu = current.shape[1]
 			#print "number current %d" %no_cu
@@ -209,15 +210,15 @@ def ffp_dax(filename,xmlname):
 		
 		if no_com > 0:
 			print "there were %d events" %no_com
-			times = complete[3,0:no_com] - complete[2,0:no_com]
+			times = complete[3,0:no_com] - complete[2,0:no_com] + 1
 			print 'average event length: %f' %float(np.mean(times))
 			print 'median event length: %f' %float(np.median(times))
-		
+		else:
+			times = np.zeros((1,1))
 		#now, if appropriate, map the values
 		if par.emchs ==1:
 			pass
 		elif par.emchs == 2:
-			print 'final mapping not checked yet! careful!'
 			#mapping - have 'left' coordinates; need 'right' channel coordinates too
 			#first, expand complete to have space for more coordinates.
 			bigcomplete = np.zeros((6,50000))
