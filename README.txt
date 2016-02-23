@@ -1,7 +1,7 @@
 SMA - Single Molecule Analysis
 BDA 10/22/15 UNDER DEVELOPMENT
-Updated 2/15/16 - developing for 2 channel data. IN PROGRESS. currently, can generate 2 channel .pks3d file. mapping is lightly tested. apdax.py not set up for 2 channel yet.
- Keep emchs =1 and it works fine for real data analysis.
+Updated 2/22/16 - developing for 2 channel data. Done, lightly tested on bead data. map_coords works; warping the image is either right or very close.
+
 
 Dependencies - See Storm analysis and DAOSTORM analysis requirements. You should be able to run STORM analysis using the sample data in the 3d_daostorm directory before trying to use this code.
 https://github.com/ZhuangLab/storm-analysis
@@ -24,6 +24,6 @@ Major pieces:
 -ffpdax: find peaks in .dax movie. Can be set to automatically run apdax when done.
 -apdax: analyze those peaks.
 -single xml file specifies settings for both codes.
--multibatch - run multiple analyses in parallel
+-multibatch - run multiple analyses in parallel. (Or, for better output, run each in a separate command line window)
 
-Functional and tested for a very limited set of settings (for now). Works with: .pks3d, emchs=1, .trdir, ALEX4 = 0 or 1
+Functional and tested for a very limited set of settings (for now). Works with: .pks3d, emchs=1 or 2, .trdir, ALEX4 = 0 or 1
