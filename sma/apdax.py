@@ -16,6 +16,7 @@ import sma_lib.loadpeaks as loadpeaks
 #import sa_library.gaussfit as gaussfit #looks like this doesn't allow fitting over all parameters - just center position
 from scipy import optimize
 import sma_lib.savetrdir as savetrdir
+import sma_lib.mapcoords as mapcoords
 codeversion = "20151208"
 		
 def ap_dax(filename,xmlname):
@@ -27,7 +28,11 @@ def ap_dax(filename,xmlname):
 	#and making other changes which might be needed based on the settings - 
 	#eg round frame numbers to mutiple of 4 if alternating laser on STORM2
 
-	#for now, ignoring CMOS calibration. FIXME
+	if par.emchs == 2:	#read in mapping files
+		Pr2l, Qr2l = mapcoords.readmapping(par,'r2l')
+		Pl2r, Ql2r = mapcoords.readmapping(par,'l2r')
+		
+	#for now, not using CMOS calibration. FIXME
 	if par.hcam_cal == 1:
 		print "Not set up for CMOS calibration"
 	#for now, only set up for .trdir output and .pks3d input
@@ -117,8 +122,8 @@ def ap_dax(filename,xmlname):
 			if peaks[j,peaks_dim-1] >= i and peaks[j,peaks_dim-2] <= i: #this event is happening now!
 				for ch in range(0,par.emchs):
 					#determine intensity
-					curx = peaks[j,1+2*ch]
-					cury = peaks[j,2+2*ch]
+					curx = math.floor(peaks[j,1+2*ch])
+					cury = math.floor(peaks[j,2+2*ch])
 					if par.mt == 0:#simple integration
 						local = frame[cury-par.sibs:cury+par.sibs+1,curx-par.sibs:curx+par.sibs+1] - fr_bkgd[cury-par.sibs:cury+par.sibs+1,curx-par.sibs:curx+par.sibs+1]
 						time_tr[j][ch,addfr[j]] = np.sum(local)
@@ -139,7 +144,12 @@ def ap_dax(filename,xmlname):
 						
 						#if fit successful and center is within box, store result
 						if success>0 and success<5 and p1[2]>0 and p1[2] < (2*par.fit_box+1) and p1[3]>0 and p1[3] < (2*par.fit_box+1):
-							crds_tr[j][ch,addfr[j],:] = [p1[2]+curx-par.fit_box,p1[3]+cury-par.fit_box,abs(p1[4]),abs(p1[5]),1.0,0.0,0.0,p1[1]]
+							xfitpos = p1[2]+curx-par.fit_box
+							yfitpos = p1[3]+cury-par.fit_box
+							if ch == 1: #map right channel onto the left.
+								xfitpos -= par.dimx/2 #mapping takes relative coordinate - within own channel.
+								[xfitpos,yfitpos] = mapcoords.map_coords(xfitpos,yfitpos,Pr2l,Qr2l)
+							crds_tr[j][ch,addfr[j],:] = [xfitpos,yfitpos,abs(p1[4]),abs(p1[5]),1.0,0.0,0.0,p1[1]]
 							#for coordinates (x,y, x_stdev, y_stdev, fitting flag, quality metric, tilt angle, fit height)
 							#fixme: not using any metric of quality.
 				addfr[j] = addfr[j] + 1

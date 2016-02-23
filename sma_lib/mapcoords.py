@@ -7,8 +7,8 @@ import numpy as np
 
 def map_coords(x,y,P,Q):
 	deg = P.shape[0] #this is actually mapdeg +1
-	newx = 0
-	newy = 0
+	newx = 0.0
+	newy = 0.0
 	for i in range(0,deg):
 		for j in range (0,deg):
 			newx += P[i,j] * (x**i) * (y**j)

@@ -54,7 +54,7 @@
   <pickchan type = 'int'>0</pickchan> <!--if there are two emission channels. pickchan =0 is left channel, pickchan =1 is right channel (higher index), pickchan = 2 is combined-->
 
  <!--settings specific to .pks3d generation-->
- <frameset type = "ulong">10</frameset> <!--how many frames to look at at a time?-->
+ <frameset type = "ulong">100</frameset> <!--how many frames to look at at a time?-->
 <dist_thr type = "float">3</dist_thr> <!--how far part can peaks be and still be the same active event-->
 <length_thr type = "ulong">0</length_thr> <!--min length for 'accepted' events-->
 <max_len type = "ulong">1000000</max_len> <!--max length for events. set really high to turn off-->

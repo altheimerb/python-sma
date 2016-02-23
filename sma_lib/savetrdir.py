@@ -65,7 +65,7 @@ def save_trdir(filename, par, peaks, time_tr, crds_tr,done):
 			trlen = last-first+1
 		infsave = peaks[tr,0]
 		infsave = infsave.astype('uint32')
-		infsave1 = peaks[tr,1:peaks_dim-2]
+		infsave1 = peaks[tr,1:3] #only save position on first channel, even if >1channel.
 		infsave1 = infsave1.astype('float32')
 		infsave2 = np.array([peaks[tr,peaks_dim-2],peaks[tr,peaks_dim-1],first,last,trlen])
 		infsave2 = infsave2.astype('uint32')
@@ -77,62 +77,103 @@ def save_trdir(filename, par, peaks, time_tr, crds_tr,done):
 		ccrdstr = crds_tr[tr]
 		ctimetr = ctimetr.astype('int32')
 		ccrdstr=ccrdstr.astype('float32')
-		if par.ALEX4 == 0:
-			ctimetr.tofile(trpt)
-			temp = ccrdstr[:,:,0]
+		if par.emchs ==1:
+			if par.ALEX4 == 0:
+				ctimetr.tofile(trpt)
+				temp = ccrdstr[:,:,0]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,:,1]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,:,2]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,:,3]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,:,4]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,:,5]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,:,6]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,:,7]
+				temp.tofile(trpt)
+			elif par.ALEX4 ==1:#save color1,then color2
+			#color1
+				temp = ctimetr[:,0:-1:2]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,0:-1:2,0]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,0:-1:2,1]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,0:-1:2,2]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,0:-1:2,3]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,0:-1:2,4]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,0:-1:2,5]
+				temp.tofile(trpt)	
+				temp = ccrdstr[:,0:-1:2,6]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,0:-1:2,7]
+				temp.tofile(trpt)	
+			#color2	
+				temp = ctimetr[:,1::2]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,1::2,0]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,1::2,1]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,1::2,2]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,1::2,3]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,1::2,4]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,1::2,5]
+				temp.tofile(trpt)	
+				temp = ccrdstr[:,1::2,6]
+				temp.tofile(trpt)
+				temp = ccrdstr[:,1::2,7]
+				temp.tofile(trpt)	
+		elif par.emchs ==2: #output looks the same as ALEX4 = 1, but input is organized differently.
+			#channel 1
+			temp = ctimetr[0,:]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,:,1]
+			temp = ccrdstr[0,:,0]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,:,2]
+			temp = ccrdstr[0,:,1]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,:,3]
+			temp = ccrdstr[0,:,2]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,:,4]
+			temp = ccrdstr[0,:,3]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,:,5]
+			temp = ccrdstr[0,:,4]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,:,6]
+			temp = ccrdstr[0,:,5]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,:,7]
+			temp = ccrdstr[0,:,6]
 			temp.tofile(trpt)
-		elif par.ALEX4 ==1:#save color1,then color2
-		#color1
-			temp = ctimetr[:,0:-1:2]
+			temp = ccrdstr[0,:,7]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-1:2,0]
+			#channel 2
+			temp = ctimetr[1,:]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-1:2,1]
+			temp = ccrdstr[1,:,0]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-1:2,2]
+			temp = ccrdstr[1,:,1]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-1:2,3]
+			temp = ccrdstr[1,:,2]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-1:2,4]
+			temp = ccrdstr[1,:,3]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-1:2,5]
-			temp.tofile(trpt)	
-			temp = ccrdstr[:,0:-1:2,6]
+			temp = ccrdstr[1,:,4]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,0:-1:2,7]
-			temp.tofile(trpt)	
-		#color2	
-			temp = ctimetr[:,1::2]
+			temp = ccrdstr[1,:,5]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1::2,0]
+			temp = ccrdstr[1,:,6]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1::2,1]
+			temp = ccrdstr[1,:,7]
 			temp.tofile(trpt)
-			temp = ccrdstr[:,1::2,2]
-			temp.tofile(trpt)
-			temp = ccrdstr[:,1::2,3]
-			temp.tofile(trpt)
-			temp = ccrdstr[:,1::2,4]
-			temp.tofile(trpt)
-			temp = ccrdstr[:,1::2,5]
-			temp.tofile(trpt)	
-			temp = ccrdstr[:,1::2,6]
-			temp.tofile(trpt)
-			temp = ccrdstr[:,1::2,7]
-			temp.tofile(trpt)	
-			
+		else:
+			print 'not set up for more than 2 emission channels'
 		trpt.close()
