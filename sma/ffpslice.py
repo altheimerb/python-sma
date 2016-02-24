@@ -40,7 +40,7 @@ def ffp_slice(img,frnum,par):
 	dimx = img.shape[1]
 	dimy = img.shape[0] #not necessarily the same as the camera's whole frame
 	#bordersize : how much of the edge to ignore
-	bordersize = 8
+	#replaced with par.frameborder to allow easier control
 	#first, set all values < threshold to zero
 	med = np.median(np.reshape(img,(dimx*dimy,1)))
 	thresh = par.std + med
@@ -74,8 +74,8 @@ def ffp_slice(img,frnum,par):
 	no_good = 0
 	no_keep = 0
 	
-	for i in range(bordersize,dimx - bordersize+1):
-		for j in range(bordersize,dimy-bordersize+1):
+	for i in range(par.frameborder,dimx - par.frameborder+1):
+		for j in range(par.frameborder,dimy-par.frameborder+1):
 			if img_k[j,i] > 0:
 				gp = 0 #flag for peak is good, not just keep
 				if img_g[j,i] > 0 : gp = 1 #passes std test; check around peak below
