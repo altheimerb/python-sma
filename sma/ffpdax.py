@@ -79,7 +79,7 @@ def ffp_dax(filename,xmlname):
 						rframes[:,:,k/4] = (frames[:,:,k] + frames[:,:,k+1])/2
 				elif par.pickcol ==1:
 					rframes = np.zeros((par.dimy,par.dimx,par.frameset/4))
-					for k in range(2,frameset,4):
+					for k in range(2,par.frameset,4):
 						rframes[:,:,(k-2)/4] = (frames[:,:,k] + frames[:,:,k+1])/2
 				elif par.pickcol ==2:
 					rframes = np.zeros((par.dimy,par.dimx,par.frameset/2))
