@@ -62,7 +62,28 @@ def fix_par(par,filename,antype):
 					par.endian = 0
 		inf_file.close()
 		
-	
+	if par.labview_info : #read in values from .inf file on prism3
+		length_re = re.compile(r'number of frames = ([\d]+)')
+		ystop_re = re.compile(r'frame dimensions = 1024 x ([\d]+)')
+		filename = filename + '.inf'
+		inf_file = open(filename,"r")
+		while 1 : 
+			line = inf_file.readline()
+			if not line: break
+			
+			if par.max_frame == -1: #only use length info from file if it isn't already specified!
+				m = length_re.match(line) #check if the line has length info
+				if m :
+					par.max_frame = long(m.group(1)) -1
+			if par.apmax_fr == -1:
+				m = length_re.match(line)
+				if m:
+					par.apmax_fr = long(m.group(1)) - 1
+			m = ystop_re.match(line) 
+			if m :
+				par.ypix_stop = long(m.group(1)) - 1
+		inf_file.close()
+		
 	if par.start_frame < 0: #in case anyone uses -1
 		par.start_frame = 0
 				
