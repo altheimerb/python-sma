@@ -221,7 +221,7 @@ def ffp_dax(filename,xmlname):
 		elif par.emchs == 2:
 			#mapping - have 'left' coordinates; need 'right' channel coordinates too (**this is true even if picking on the right side, since it is mapped)
 			#first, expand complete to have space for more coordinates.
-			bigcomplete = np.zeros((6,50000))
+			bigcomplete = np.zeros((6,no_com))
 			bigcomplete[0:2,:] = complete[0:2,:]
 			bigcomplete[4:6,:] = complete[2:4,:]
 			for a in range(0,no_com):
@@ -232,6 +232,26 @@ def ffp_dax(filename,xmlname):
 				bigcomplete[3,a] =0.5*round(bigcomplete[3,a]*2,0)
 			complete = bigcomplete
 			
+			#then, need to make sure all the mapped positions are also acceptable . if not, remove that peak!
+			#compare to par.frameborder
+			filtcomplete = np.zeros(6,no_com)
+			no_filt = 0
+			for a in range(0,no_com):
+				okay =1 
+				if(complete[0,a]-par.frameborder < 0 or complete[0,a]+par.frameborder >par.dimx/2):
+					okay = 0
+				if(complete[1,a] -par.frameborder<0 or complete[1,a] +par.frameborder>par.dimy):
+					okay = 0
+				if(complete[2,a]-par.frameborder<par.dimx/2 or complete[2,a]+par.frameborder>par.dimx):
+					okay = 0
+				if(complete[3,a]-par.frameborder<0 or complete[3,a]+par.frameborder>par.dimy):
+					okay = 0
+				if(okay==1):
+					filtcomplete[:,no_filt] = complete[:,a]
+					no_filt += 1
+			complete = filtcomplete
+			no_com = no_filt
+		
 			
 		#save output as text file
 		c_tosave = np.zeros((complete.shape[0]+1,no_com))
