@@ -219,12 +219,12 @@ def ffp_dax(filename,xmlname):
 		if par.emchs ==1:
 			pass
 		elif par.emchs == 2:
-			#mapping - have 'left' coordinates; need 'right' channel coordinates too
+			#mapping - have 'left' coordinates; need 'right' channel coordinates too (**this is true even if picking on the right side, since it is mapped)
 			#first, expand complete to have space for more coordinates.
 			bigcomplete = np.zeros((6,50000))
 			bigcomplete[0:2,:] = complete[0:2,:]
 			bigcomplete[4:6,:] = complete[2:4,:]
-			for a in range(0,no_a):
+			for a in range(0,no_com):
 				bigcomplete[2:4,a]=mapcoords.map_coords(bigcomplete[0,a],bigcomplete[1,a],Pl2r,Ql2r)
 				#bigcomplete[2:4,a] = complete[0:2,a] #testing only. for null mapping
 				bigcomplete[2,a] += par.dimx/2
