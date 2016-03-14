@@ -222,8 +222,8 @@ def ffp_dax(filename,xmlname):
 			#mapping - have 'left' coordinates; need 'right' channel coordinates too (**this is true even if picking on the right side, since it is mapped)
 			#first, expand complete to have space for more coordinates.
 			bigcomplete = np.zeros((6,no_com))
-			bigcomplete[0:2,:] = complete[0:2,:]
-			bigcomplete[4:6,:] = complete[2:4,:]
+			bigcomplete[0:2,:] = complete[0:2,0:no_com]
+			bigcomplete[4:6,:] = complete[2:4,0:no_com]
 			for a in range(0,no_com):
 				bigcomplete[2:4,a]=mapcoords.map_coords(bigcomplete[0,a],bigcomplete[1,a],Pl2r,Ql2r)
 				#bigcomplete[2:4,a] = complete[0:2,a] #testing only. for null mapping
@@ -234,7 +234,7 @@ def ffp_dax(filename,xmlname):
 			
 			#then, need to make sure all the mapped positions are also acceptable . if not, remove that peak!
 			#compare to par.frameborder
-			filtcomplete = np.zeros(6,no_com)
+			filtcomplete = np.zeros((6,no_com))
 			no_filt = 0
 			for a in range(0,no_com):
 				okay =1 
