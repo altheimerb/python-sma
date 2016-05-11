@@ -171,7 +171,8 @@ def ap_dax(filename,xmlname):
 
 
 	print "apdax done at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " on file: " + filename
-
+	
+	
 if __name__ == "__main__":
 	#format from user: ffpdax filename xmlfile
 	# check input

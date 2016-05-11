@@ -3,6 +3,8 @@
 import numpy as np
 import datetime
 import os
+import t2D_hist.t2dhist as t2dhist 
+
 
 
 def save_trdir(filename, par, peaks, time_tr, crds_tr,done):
@@ -177,3 +179,6 @@ def save_trdir(filename, par, peaks, time_tr, crds_tr,done):
 		else:
 			print 'not set up for more than 2 emission channels'
 		trpt.close()
+		
+	if(par.gen_2dhist==1):
+		t2dhist.get_2d_hist(par.file + "trdir")

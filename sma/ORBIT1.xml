@@ -14,7 +14,7 @@
   <max_frame type="int">100</max_frame>
   <!--frames to use during apdax analysis. set to -1 to use whole file-->
   <apst_fr type = "int">0</apst_fr>
-  <apmax_fr type = "int">-1</apmax_fr>
+  <apmax_fr type = "int">10</apmax_fr>
   
   <!--mapping-->
   <mapfilel2r type = 'string'>O:\Imaging Data\prism3data\beads512\bead0thru4.dax.brmap</mapfilel2r> <!--Req'd if emchs =2-->
@@ -32,7 +32,7 @@
  <!--data source settings-->
  <from_hal type="int">1</from_hal> <!--set to 0 if from labView-->
  <hal_info type="int">1</hal_info> <!--set to 1 read in key info from hal directly-->
- <labview_info type="int">1</labview_info> <!--set to 1 to read in length & ydim from prism3 .inf file-->
+ <labview_info type="int">0</labview_info> <!--set to 1 to read in length & ydim from prism3 .inf file-->
  <endian type = "int">0</endian> <!--storage type. 0 for little endian (hal); 1 for big endian (labview)-->
   
    <!-- Film parameters -->
@@ -94,5 +94,8 @@
    <dimy type = "int">-1</dimy>
     <file type = 'string'>''</file> <!--filename gets added to this field automatically-->
  
+ 
+ <gen_2dhist type = 'int'>1</gen_2dhist> <!--generate 2d histograms in python? yes=1-->
+ <!--note 2d histogram settings are hard-wired-->
  
 </settings>
