@@ -86,6 +86,8 @@ def get_angHist(trdir):
 		except(ValueError):
 			print("Trace %d: invalid input to circle fits; probably trace is all NaNs" %tr)
 			circres[tr,:] = [np.nan, np.nan, np.nan, np.nan]
+			circfit_x = 0
+			circfit_y = 0 #keeps downstream code happy.
 		#calculate angular information from xcur, ycur
 		#angcur = np.zeros(hist_len)
 		poscomp=np.zeros(hist_len)
@@ -126,9 +128,16 @@ def get_angHist(trdir):
 			except(ValueError):
 				print("Trace %d: gaussian fit error. Likely NaNs." %tr)
 				[A, mu, sigma, yoff, resid] = [np.nan, np.nan, np.nan, np.nan, np.nan]
+				anghistcur_sh2 = np.zeros((n_bins))
+				#anghistcur_sh2 = np.nan
+				anghists[tr,:] = anghistcur_sh2
 		except(ValueError):
 			print("Trace %d: gaussian fit error. Likely NaNs." %tr)
 			[A, mu, sigma, yoff, resid] = [np.nan, np.nan, np.nan, np.nan, np.nan]
+			anghistcur_sh2 = np.zeros((n_bins))
+			#anghistcur_sh2 = np.nan
+			anghists[tr,:] = anghistcur_sh2
+
 
 		
 		
