@@ -52,8 +52,8 @@ def get_2d_hist(trdir):
 		trace['yy'][trace['yy']==0] = np.nan
 
 		for s in range(0,n_sets):
-			xcur = trace['xx'][s*frnum:(s+1)*frnum-1]
-			ycur = trace['yy'][s*frnum:(s+1)*frnum-1]
+			xcur = trace['xx'][int(s*frnum):int((s+1)*frnum-1)]
+			ycur = trace['yy'][int(s*frnum):int((s+1)*frnum-1)]
 			
 			
 			#define mean as center of localizations
