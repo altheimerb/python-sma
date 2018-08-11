@@ -125,18 +125,19 @@ def ap_dax(filename,xmlname):
 					curx = math.floor(peaks[j,1+2*ch])
 					cury = math.floor(peaks[j,2+2*ch])
 					if par.mt == 0:#simple integration
-						local = frame[cury-par.sibs:cury+par.sibs+1,curx-par.sibs:curx+par.sibs+1] - fr_bkgd[cury-par.sibs:cury+par.sibs+1,curx-par.sibs:curx+par.sibs+1]
-						time_tr[j][ch,addfr[j]] = np.sum(local)
+						local = frame[int(cury-par.sibs):int(cury+par.sibs+1),int(curx-par.sibs):int(curx+par.sibs+1
+							)] - fr_bkgd[int(cury-par.sibs):int(cury+par.sibs+1),int(curx-par.sibs):int(curx+par.sibs+1)]
+						time_tr[j][ch,int(addfr[j])] = np.sum(local)
 					elif par.mt == 1:#gaussian masking
 						print 'not set up for gaussian masking yet'
 				
 					#if appropriate, fit
-					if time_tr[j][ch,addfr[j]] > par.fit_thr:
+					if time_tr[j][ch,int(addfr[j])] > par.fit_thr:
 						#use least squares optimization
 						#loc = np.ravel(frame[cury-par.fit_box:cury+par.fit_box+1,curx-par.fit_box:curx+par.fit_box+1])
-						loc = frame[cury-par.fit_box:cury+par.fit_box+1,curx-par.fit_box:curx+par.fit_box+1]
+						loc = frame[int(cury-par.fit_box):int(cury+par.fit_box+1),int(curx-par.fit_box):int(curx+par.fit_box+1)]
 						[yguess,xguess] = np.unravel_index(loc.argmax(),loc.shape)
-						p0 = np.array([float(fr_bkgd[cury,curx]),float(loc[yguess,xguess]),xguess,yguess,1.1,1.1])#a smarter initial guess
+						p0 = np.array([float(fr_bkgd[int(cury),int(curx)]),float(loc[int(yguess),int(xguess)]),xguess,yguess,1.1,1.1])#a smarter initial guess
 						loc = np.ravel(loc)
 						#p0 = np.array([float(fr_bkgd[cury,curx]), float(frame[cury,curx]), par.fit_box,par.fit_box,1.0,1.0]) #initial guess
 
@@ -149,7 +150,7 @@ def ap_dax(filename,xmlname):
 							if ch == 1: #map right channel onto the left.
 								xfitpos -= par.dimx/2 #mapping takes relative coordinate - within own channel.
 								[xfitpos,yfitpos] = mapcoords.map_coords(xfitpos,yfitpos,Pr2l,Qr2l)
-							crds_tr[j][ch,addfr[j],:] = [xfitpos,yfitpos,abs(p1[4]),abs(p1[5]),1.0,0.0,0.0,p1[1]]
+							crds_tr[j][ch,int(addfr[j]),:] = [xfitpos,yfitpos,abs(p1[4]),abs(p1[5]),1.0,0.0,0.0,p1[1]]
 							#for coordinates (x,y, x_stdev, y_stdev, fitting flag, quality metric, tilt angle, fit height)
 							#fixme: not using any metric of quality.
 				addfr[j] = addfr[j] + 1

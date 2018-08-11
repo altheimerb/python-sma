@@ -132,11 +132,11 @@ def ffp_slice(img,frnum,par):
 							for k in range(-5,6):
 								for l in range(-5,6) :
 									if circle[k+5,l+5] == 1:
-										img_disp[flt_y+k,flt_x+l] = 100
+										img_disp[int(flt_y+k),int(flt_x+l)] = 100
 						elif par.keeptype == 0: #only display these results if they are being used
 								for l in range(-5,6) :
 									if circle[k+5,l+5] == 1:
-										img_disp[flt_y+k,flt_x+l] = 60 #different color for circle
+										img_disp[int(flt_y+k),int(flt_x+l)] = 60 #different color for circle
 						
 	
 	#FIXME: while this does overwrite the existing .bmp, the date/time stamp isn't updated. (at least on my laptop)
@@ -171,7 +171,7 @@ def ffp_keep(img,frnum,par,prevlist):
 	fr_bk = smbkgr.sm_bkgr(img,par.bksize)
 	
 	for i in range(0,no_act):
-		if (fr_bk[prevlist[1,i],prevlist[0,i]] * par.int_thr < img[prevlist[1,i],prevlist[0,i]]): keeplist[i] = 1
+		if (fr_bk[int(prevlist[1,i]),int(prevlist[0,i])] * par.int_thr < img[int(prevlist[1,i]),int(prevlist[0,i])]): keeplist[i] = 1
 		
 	#display result
 	img_dispk = np.copy(img)
@@ -180,12 +180,12 @@ def ffp_keep(img,frnum,par,prevlist):
 			for k in range(-5,6):
 				for l in range(-5,6):
 					if circle[k+5,l+5] == 1:
-						img_dispk[prevlist[1,i]+k,prevlist[0,i]+l] = 60
+						img_dispk[int(prevlist[1,i]+k),int(prevlist[0,i]+l)] = 60
 		else:
 			for k in range(-5,6):
 				for l in range(-5,6):
 					if circle[k+5,l+5] == 1:
-						img_dispk[prevlist[1,i]+k,prevlist[0,i]+l] = 100
+						img_dispk[int(prevlist[1,i]+k),int(prevlist[0,i]+l)] = 100
 	
 	#save img_dispk
 	#im = Image.fromarray(img_dispk.astype(np.uint8))
