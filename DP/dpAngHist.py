@@ -128,16 +128,28 @@ def get_angHist(trdir):
 			except(ValueError):
 				print("Trace %d: gaussian fit error. Likely NaNs." %tr)
 				[A, mu, sigma, yoff, resid] = [np.nan, np.nan, np.nan, np.nan, np.nan]
-				anghistcur_sh2 = np.zeros((n_bins))
+				#anghistcur_sh2 = np.zeros((n_bins))
+				#anghistcur_sh2 = np.nan
+				anghists[tr,:] = anghistcur_sh2
+			except(RuntimeError):
+				print("fitting failure - RuntimeError")
+				[A, mu, sigma, yoff, resid] = [np.nan, np.nan, np.nan, np.nan, np.nan]
+				#anghistcur_sh2 = np.zeros((n_bins))
 				#anghistcur_sh2 = np.nan
 				anghists[tr,:] = anghistcur_sh2
 		except(ValueError):
 			print("Trace %d: gaussian fit error. Likely NaNs." %tr)
 			[A, mu, sigma, yoff, resid] = [np.nan, np.nan, np.nan, np.nan, np.nan]
-			anghistcur_sh2 = np.zeros((n_bins))
+			#anghistcur_sh2 = np.zeros((n_bins))
+			anghistcur_sh2 = anghistcur_sh #might as well output less optimally shifted histogram
 			#anghistcur_sh2 = np.nan
 			anghists[tr,:] = anghistcur_sh2
-
+		except(RuntimeError):
+			print("fitting failure - RuntimeError")
+			[A, mu, sigma, yoff, resid] = [np.nan, np.nan, np.nan, np.nan, np.nan]
+			#anghistcur_sh2 = np.zeros((n_bins))
+			anghistcur_sh2 = anghistcur_sh #might as well output less optimally shifted histogram
+			anghists[tr,:] = anghistcur_sh2
 
 		
 		
