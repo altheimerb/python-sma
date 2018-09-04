@@ -2,6 +2,8 @@
 #(eventually. for now, limited functionality.)
 #seems to work; limited to storm2; VERY limited testing so far
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
 import numpy as np
 import sa_library.parameters as params
 import sma_lib.fixpar as fixpar

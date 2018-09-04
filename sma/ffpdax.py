@@ -6,6 +6,8 @@
 
 #format from user: ffpdax filename xmlfile
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
 import numpy as np
 import sa_library.parameters as params
 import sma_lib.fixpar as fixpar
