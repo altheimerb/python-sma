@@ -63,7 +63,8 @@
 <int_thr type = "float">1.5</int_thr> <!-- intensity threshold for keeptype = 1 -->
 <keepratio type = "float">4</keepratio> <!--for keeptype = 0 - how much to lower threshold-->
  <pickcol type= "int">2</pickcol> <!-- goes with ALEX4. =0 for picking on frames0,1; 1 for frames 2,3; 2 for all frames.-->
-<frameborder type = 'int'>5</frameborder> <!--how many frames along the edge need to be excluded as peak center positions? This used to be hardwired as 8. error if <5-->
+<frameborder type = 'int'>6</frameborder> <!--how many frames along the edge need to be excluded as peak center positions? This used to be hardwired as 8. error if <5-->
+ <strict_neighborhood type = 'int'>0</strict_neighborhood> <!--increase amount of surrounding area that needs to be clear of intense pixels-->
  
  <!--settings for apdax when used with pks3d input-->
  <buffer_fr type = 'int'>150</buffer_fr> <!--frames to add around .pks3d event-->

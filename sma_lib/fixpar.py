@@ -106,9 +106,13 @@ def fix_par(par,filename,antype):
 	if par.dimx % par.bksize !=0 or par.dimy % par.bksize !=0:
 		print "bksize needs to be a divisor of both dimensions!"
 		
-	print par.det_disp_set
+	#print par.det_disp_set
 	if(par.det_disp_set==1):
 		print "Not set up for det_disp_set == True yet!!!"
 	
+	
+	if(not(hasattr(par,'strict_neighborhood'))):
+		par.strict_neighborhood = 0 #defaults to original if not specified, for backwards compatibility with xml files.
+		#print "setting strict_neighborhood to 0"
 	
 	return par

@@ -27,6 +27,22 @@ circle[:,8] = [0,0,1,0,0,0,0,0,1,0,0]
 circle[:,9] = [0,0,0,1,1,1,1,1,0,0,0]
 circle[:,10]= [0,0,0,0,0,0,0,0,0,0,0]
 
+
+#if strict_neighborhood is turned on (xml file), check if there is intensity in any of the locations marked with '1'
+strictcircle = np.zeros((11,11))
+strictcircle[:,0] = [1,1,1,1,1,1,1,1,1,1,1]
+strictcircle[:,1] = [1,1,1,1,1,1,1,1,1,1,1]
+strictcircle[:,2] = [1,1,1,0,0,0,0,0,1,1,1]
+strictcircle[:,3] = [1,1,0,0,0,0,0,0,0,1,1]
+strictcircle[:,4] = [1,1,0,0,0,0,0,0,0,1,1]
+strictcircle[:,5] = [1,1,0,0,0,0,0,0,0,1,1]
+strictcircle[:,6] = [1,1,0,0,0,0,0,0,0,1,1]
+strictcircle[:,7] = [1,1,0,0,0,0,0,0,0,1,1]
+strictcircle[:,8] = [1,1,1,0,0,0,0,0,1,1,1]
+strictcircle[:,9] = [1,1,1,1,1,1,1,1,1,1,1]
+strictcircle[:,10]= [1,1,1,1,1,1,1,1,1,1,1]
+
+
 #set up color table. there is probably a better way to do this.
 ct = np.zeros((4,256))
 for i in range(0,256):
@@ -99,6 +115,13 @@ def ffp_slice(img,frnum,par):
 								#less picky for keep:
 								if img[j+k,i+l] > (med+0.5*float(z)*par.keepratio) : quality = 0
 					
+					#if strict_neighborhood is on, apply a more stringent filter (only if not already rejected)
+					if ((par.strict_neighborhood ==1) and (quality==1)):
+						for k in range(-5,6):
+							for l in range(-5,6):
+								if strictcircle[k+5,l+5] > 0 :
+									if img[j+k,i+l] > (med+0.25*float(z)): gp= 0 #peak isn't good.
+									
 					if quality == 1 :
 						#refine peak position to nearest half pixels
 						#print "pre refine (x,y):"
