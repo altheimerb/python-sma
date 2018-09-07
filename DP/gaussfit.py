@@ -16,9 +16,14 @@ def fitgauss(bin_edges, counts, guess):
 	#plt.plot(bincen, counts, label = 'data')
 	#plt.show()
 
-	coeff, var_matrix = curve_fit(gauss, bincen, counts, guess, 
-		bounds=([0,-np.inf, 0, 0],[np.inf,np.inf, np.inf, np.inf]))
-	[A, mu, sigma, yoff] = coeff
+	if(guess[3]>0): #allow y_offset
+		coeff, var_matrix = curve_fit(gauss, bincen, counts, guess, 
+			bounds=([0,-np.inf, 0, 0],[np.inf,np.inf, np.inf, np.inf]))
+	else: #force y_offset to be zero - pure gaussian
+		coeff, var_matrix = curve_fit(puregauss, bincen, counts, guess[0:3], 
+			bounds=([0,-np.inf, 0],[np.inf,np.inf, np.inf]))
+		[A, mu, sigma] = coeff
+		yoff = 0.0
 	c_exp = gauss(bincen, A, mu, sigma, yoff)
 	resid2 = sum((c_exp - counts)**2)
 #print coeff
@@ -36,3 +41,7 @@ def fitgauss(bin_edges, counts, guess):
 def gauss(x, *p):
     A, mu, sigma, yoff = p
     return A*np.exp(-(x-mu)**2/(2.*sigma**2)) + yoff
+	
+def puregauss(x, *p): #no y_offset
+    A, mu, sigma = p
+    return A*np.exp(-(x-mu)**2/(2.*sigma**2))
