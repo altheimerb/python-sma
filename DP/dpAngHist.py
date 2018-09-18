@@ -20,8 +20,8 @@ def get_angHist(trdir):
 	"histograms on %s at %s" % (trdir, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 	
 	#parameters? may convert to xml file later?
-	circfit_start = 1 #which frames to fit to circle?
-	circfit_end = 2000
+	circfit_start = 0 #which frames to fit to circle?
+	circfit_end = 1999
 	circcen_constr = 3 #circle fitting constraints; values taken from igor code. x,y constraints, relative to initial guess
 	circfit_middle1 = int((circfit_end-circfit_start+1)/2) #for fitting over two intervals to check for drift.
 	circfit_middle2 = circfit_middle1#circfit_end - int((circfit_end-circfit_start+1)/4)
@@ -64,6 +64,7 @@ def get_angHist(trdir):
 	anghists_raw = np.zeros((n_tr,n_bins)) #not re-centered
 	anghists = np.zeros((n_tr,n_bins)) #recenter: max bin at angle = 0
 	gaussfits = np.zeros((n_tr,5)) #gaussian fits - amplitude, mean, width, y_offset, residual
+	histshifts = np.zeros(n_tr) #histogram angle shifts
 	
 	#go through each trace.
 	for tr in range(0,n_tr):
@@ -138,6 +139,7 @@ def get_angHist(trdir):
 	
 		#recenter around peak. careful b/c 'mod' is always positive in python
 		peakpos = np.argmax(anghistcur)
+		shift = bins1[peakpos]
 		angcur_sh = ((angcur - bins1[peakpos]+180) % 360) - 180 
 		[anghistcur_sh, bins1] = np.histogram(angcur_sh, bins=bins1, density=True) #normalized, assuming equal sized bins
 		anghistcur_sh *= binsize #np histogram normalizes for integration, not summation over bins
@@ -159,6 +161,7 @@ def get_angHist(trdir):
 			[anghistcur_sh2, bins1] = np.histogram(angcur_sh2, bins=bins1, density=True) #normalized, assuming equal sized bins
 			anghistcur_sh2 *= binsize #np histogram normalizes for integration, not summation over bins
 			anghists[tr,:] = anghistcur_sh2
+			shift += mu #update measure of how much center was shifted.
 		
 			#refit
 			if(allow_yoff==1):
@@ -183,7 +186,7 @@ def get_angHist(trdir):
 			print("Trace %d: gaussian fit error. Likely NaNs." %tr)
 			[A, mu, sigma, yoff, resid] = [np.nan, np.nan, np.nan, np.nan, np.nan]
 			#anghistcur_sh2 = np.zeros((n_bins))
-			anghistcur_sh2 = anghistcur_sh #might as well output less optimally shifted histogram
+			anghistcur_sh2 = anghistcur_sh #might as well output less optimally shifted histogram. note the 'shift' variable is still the amount this histogram was shifted b/c mu will not have been added.
 			#anghistcur_sh2 = np.nan
 			anghists[tr,:] = anghistcur_sh2
 		except(RuntimeError):
@@ -194,9 +197,10 @@ def get_angHist(trdir):
 			anghists[tr,:] = anghistcur_sh2
 
 		
-		
+		histshifts[tr] = shift
 		gaussfits[tr,:] = [A, mu, sigma, yoff, resid]
 		gf = np.array([A, mu, sigma, yoff, resid])
+		histshifts[tr] = shift
 		
 		#save histograms, as individual files
 		d=os.path.dirname(trdir+"\\anghists\\")	
@@ -331,6 +335,12 @@ def get_angHist(trdir):
 	a.tofile(trpt)
 	trpt.close()
 	
+	#output histogram shift values - what angle is the equilibrium position?
+	trpt = open(trdir +'\\histshift.b', 'wb')
+	c = np.copy(histshifts)
+	c=c.astype('float32')
+	c.tofile(trpt)
+	trpt.close()
 	
 	print("get_angHist done at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 	
