@@ -20,6 +20,7 @@ def fitgauss(bin_edges, counts, guess):
 	if(guess[3]>0): #allow y_offset
 		coeff, var_matrix = curve_fit(gauss, bincen, counts, guess, 
 			bounds=([0,-np.inf, 0, 0],[np.inf,np.inf, np.inf, np.inf]))
+		[A, mu, sigma, yoff] = coeff
 	else: #force y_offset to be zero - pure gaussian
 		coeff, var_matrix = curve_fit(puregauss, bincen, counts, guess[0:3], 
 			bounds=([0,-np.inf, 0],[np.inf,np.inf, np.inf]))
