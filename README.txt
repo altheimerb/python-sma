@@ -3,13 +3,12 @@ BDA 10/22/15 UNDER DEVELOPMENT
 Updated 2/22/16 - developing for 2 channel data. Done, lightly tested on bead data. map_coords works; warping the image is either right or very close.
 
 
-Dependencies - See Storm analysis and DAOSTORM analysis requirements. You should be able to run STORM analysis using the sample data in the 3d_daostorm directory before trying to use this code.
+Dependencies - 
+numpy, scipy, Matplotlib, PIL
 https://github.com/ZhuangLab/storm-analysis
 Also requires yattag - www.yattag.org
-[Discarded: And Scikit-image http://scikit-image.org/, which in turn requires cython.]
 OpenCV -- http://opencv.org/
 
-Maybe later I'll try to pare down to what is really needed from STORM analysis
 
 This code is run in several steps:
 

@@ -1,6 +1,6 @@
 #take in parameter object (defined in parameters.py) and output xml file.
 #into file named in outxml
-import xml.etree.cElementTree as ET
+#import xml.etree.cElementTree as ET
 from yattag import indent
 from yattag import Doc
 import datetime
