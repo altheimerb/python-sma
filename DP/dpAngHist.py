@@ -8,6 +8,9 @@ import datetime
 import circfit
 import gaussfit
 import os
+import sma_lib.parameters as params
+import sma_lib.writexml as writexml
+
 
 #For each trace, fit to circle, generate histogram, fit to gaussian.
 #for DP analysis
@@ -15,46 +18,40 @@ import os
 #BDA 20180802
 #under development
 
-def get_angHist(trdir):
+def get_angHist(trdir, xmlname):
 	print("Fitting circles, generating histograms, and fitting " + 
 	"histograms on %s at %s" % (trdir, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 	
 	#parameters? may convert to xml file later?
-	circfit_start = 0 #which frames to fit to circle?
-	circfit_end = 1999
-	circcen_constr = 3 #circle fitting constraints; values taken from igor code. x,y constraints, relative to initial guess
-	circfit_middle1 = int((circfit_end-circfit_start+1)/2) #for fitting over two intervals to check for drift.
-	circfit_middle2 = circfit_middle1#circfit_end - int((circfit_end-circfit_start+1)/4)
+	par = params.Parameters(xmlname+'.xml') #par is an object of type Parameters, defined in sa_library
+	#if hist_start and _end expect to get set based on circle (value=-1)
+	if(par.hist_start == -1):
+		par.hist_start = par.circfit_start
+	if(par.hist_end == -1):
+		par.hist_end = par.circfit_end
 
+	circfit_middle1 = int((par.circfit_end-par.circfit_start+1.0)/2.0) #for fitting over two intervals to check for drift.
+	circfit_middle2 = circfit_middle1#circfit_end - int((circfit_end-circfit_start+1)/4)
 	
-	hist_start = circfit_start #which frames to include in histogram
-	hist_end = circfit_end
-	hist_len = hist_end-hist_start+1
+	hist_len = par.hist_end-par.hist_start+1
 	radguess = 0.4 #initial guess for circle radius. currently not used
-	binsize = 10 #bin size for histogram, in deg
-	allow_yoff = 0 #set to 1 to allow non-zero y-offset during gaussian fit of histogram; 0 for 'pure' gaussian, no offset
 	
-	if(allow_yoff==1): print("gaussian with y offset")
-	if(allow_yoff==0): print("gaussian without y offset")
+	
+	if(par.allow_yoff==1): print("gaussian with y offset")
+	if(par.allow_yoff==0): print("gaussian without y offset")
 	
 	#open peak list
 	listptr = open(trdir+'\\trlist.txt','r')
 	peaklist = []
 	for line in listptr:
 		peaklist.append(line[0:5])
-	n_tr = len(peaklist)
-	
-	#for testing
-	#n_tr = 5
-	#fixme
-	print("Number of traces: "+str(n_tr))
-	
+	n_tr = len(peaklist)	
 	
 	#other stuff that doesn't need to get re-calculated
-	n_bins = 360 / binsize
+	n_bins = int(360.0 / par.binsize)
 	bins1 = np.zeros(n_bins+1) #need the right edge also
 	for i in range(0,n_bins+1):
-		bins1[i]= -180 + i*10
+		bins1[i]= -180.0 + i*par.binsize
 	#print(bins1)	
 	
 	#create arrays to fill in with each trace's info
@@ -68,7 +65,7 @@ def get_angHist(trdir):
 	
 	#go through each trace.
 	for tr in range(0,n_tr):
-		if 1:# tr%100 ==0:
+		if tr%100 ==0:
 			print 'working on trace ' + str(tr)
 		#load trace
 		trace = loadtrace.load_trace(trdir+'//'+peaklist[tr]+'.tr')
@@ -78,8 +75,8 @@ def get_angHist(trdir):
 		trace['yy'][trace['yy']==0] = np.nan
 		
 		#extract x, y traces separately, over the desired range
-		xcur = trace['xx'][circfit_start:circfit_end+1]
-		ycur = trace['yy'][circfit_start:circfit_end+1]
+		xcur = trace['xx'][par.circfit_start:par.circfit_end+1]
+		ycur = trace['yy'][par.circfit_start:par.circfit_end+1]
 		#fixme: what happens if desired range is longer than trace?
 
 		#fit to a circle
@@ -87,10 +84,10 @@ def get_angHist(trdir):
 		yav=np.nanmean(ycur)
 		finiteMask = np.isfinite(xcur) #to remove Nans and infs before fitting - otherwise, scipy least squares fails
 		#also generate arrays with halves of the data for drift check
-		xcurp1 = trace['xx'][circfit_start:circfit_middle1]
-		ycurp1 = trace['yy'][circfit_start:circfit_middle1]
-		xcurp2 = trace['xx'][circfit_middle2:circfit_end]
-		ycurp2 = trace['yy'][circfit_middle2:circfit_end]
+		xcurp1 = trace['xx'][par.circfit_start:circfit_middle1]
+		ycurp1 = trace['yy'][par.circfit_start:circfit_middle1]
+		xcurp2 = trace['xx'][circfit_middle2:par.circfit_end]
+		ycurp2 = trace['yy'][circfit_middle2:par.circfit_end]
 		finiteMaskp1 = np.isfinite(xcurp1)
 		finiteMaskp2 = np.isfinite(xcurp2)
 		
@@ -100,14 +97,14 @@ def get_angHist(trdir):
 		#bounds=([trace['xpos']-3,trace['ypos']-3],[trace['xpos']+3,trace['ypos']+3]))
 		try: 
 			[circfit_x, circfit_y, circfit_rad, circfit_resid] = circfit.cfit(xcur[finiteMask], ycur[finiteMask], xav, yav,radguess, 
-				bounds=([xav-3,yav-3],[xav+3,yav+3]))
+				bounds=([xav-par.circcen_constr,yav-par.circcen_constr],[xav+par.circcen_constr,yav+par.circcen_constr]))
 			circres[tr,:] = [circfit_x, circfit_y, circfit_rad, circfit_resid]
 			#fit to circle over half intervals to check for drift
 			[circfit_xp1, circfit_yp1, circfit_radp1, circfit_residp1] = circfit.cfit(xcurp1[finiteMaskp1], ycurp1[finiteMaskp1], xav, yav,radguess, 
-				bounds=([xav-3,yav-3],[xav+3,yav+3]))
+				bounds=([xav-par.circcen_constr,yav-par.circcen_constr],[xav+par.circcen_constr,yav+par.circcen_constr]))
 			circresp1[tr,:] = [circfit_xp1, circfit_yp1, circfit_radp1, circfit_residp1]
 			[circfit_xp2, circfit_yp2, circfit_radp2, circfit_residp2] = circfit.cfit(xcurp2[finiteMaskp2], ycurp2[finiteMaskp2], xav, yav,radguess, 
-				bounds=([xav-3,yav-3],[xav+3,yav+3]))
+				bounds=([xav-par.circcen_constr,yav-par.circcen_constr],[xav+par.circcen_constr,yav+par.circcen_constr]))
 			circresp2[tr,:] = [circfit_xp2, circfit_yp2, circfit_radp2, circfit_residp2]
 		except(ValueError):
 			print("Trace %d: invalid input to circle fits; probably trace is all NaNs" %tr)
@@ -134,7 +131,7 @@ def get_angHist(trdir):
 
 		#generate histogram from angcur
 		[anghistcur, bins1] = np.histogram(angcur,bins=bins1, density=True) #normalized, assuming equal sized bins
-		anghistcur *= binsize #np histogram normalizes for integration, not summation over bins
+		anghistcur *= par.binsize #np histogram normalizes for integration, not summation over bins
 		anghists_raw[tr,:] = anghistcur
 	
 		#recenter around peak. careful b/c 'mod' is always positive in python
@@ -142,32 +139,32 @@ def get_angHist(trdir):
 		shift = bins1[peakpos]
 		angcur_sh = ((angcur - bins1[peakpos]+180) % 360) - 180 
 		[anghistcur_sh, bins1] = np.histogram(angcur_sh, bins=bins1, density=True) #normalized, assuming equal sized bins
-		anghistcur_sh *= binsize #np histogram normalizes for integration, not summation over bins
+		anghistcur_sh *= par.binsize #np histogram normalizes for integration, not summation over bins
 		anghists[tr,:] = anghistcur_sh
 		#note: bins1 values are bin edges.
 		
 		#fit each to an offset gaussian
-		if(allow_yoff==1):
-			guess = [(1.0/n_bins), 0, 90, (0.1/n_bins)]
-		elif(allow_yoff==0):
-			guess = [(1.0/n_bins), 0, 90, -1] #-1 as guess for y_off is instruction to fix at zero.
+		if(par.allow_yoff==1):
+			guess = [(1.0/n_bins), 0.0, 90.0, (0.1/n_bins)]
+		elif(par.allow_yoff==0):
+			guess = [(1.0/n_bins), 0.0, 90.0, -1] #-1 as guess for y_off is instruction to fix at zero.
 
 		try:
 			[A, mu, sigma, yoff, resid] = gaussfit.fitgauss(bins1,anghistcur_sh,guess)
 			
 			#maybe more reliable than assuming max is the center position:
 			#recenter histogram using fit result, then re-fit
-			angcur_sh2 = ((angcur_sh - mu+180) % 360) - 180 
+			angcur_sh2 = ((angcur_sh - mu+180.0) % 360.0) - 180.0 
 			[anghistcur_sh2, bins1] = np.histogram(angcur_sh2, bins=bins1, density=True) #normalized, assuming equal sized bins
-			anghistcur_sh2 *= binsize #np histogram normalizes for integration, not summation over bins
+			anghistcur_sh2 *= par.binsize #np histogram normalizes for integration, not summation over bins
 			anghists[tr,:] = anghistcur_sh2
 			shift += mu #update measure of how much center was shifted.
 		
 			#refit
-			if(allow_yoff==1):
-				guess = [(1/n_bins), 0, 90, (0.1/n_bins)]
-			elif(allow_yoff==0):
-				guess = [(1/n_bins), 0, 90, -1] #-1 as guess for y_off is instruction to fix at zero.
+			if(par.allow_yoff==1):
+				guess = [(1/n_bins), 0.0, 90.0, (0.1/n_bins)]
+			elif(par.allow_yoff==0):
+				guess = [(1/n_bins), 0.0, 90.0, -1] #-1 as guess for y_off is instruction to fix at zero.
 			try:
 				[A, mu, sigma, yoff, resid] = gaussfit.fitgauss(bins1,anghistcur_sh2,guess)
 			except(ValueError):
@@ -318,19 +315,19 @@ def get_angHist(trdir):
 	
 	#output .info file on settings
 	trpt = open(trdir +'\\anghistSettings.info', 'wb')
-	a=np.array([circfit_start])
+	a=np.array([par.circfit_start])
 	a=a.astype('uint32')
 	a.tofile(trpt)
-	a=np.array([circfit_end])
+	a=np.array([par.circfit_end])
 	a=a.astype('uint32')
 	a.tofile(trpt)
-	a=np.array([hist_start])
+	a=np.array([par.hist_start])
 	a=a.astype('uint32')
 	a.tofile(trpt)
-	a=np.array([hist_end])
+	a=np.array([par.hist_end])
 	a=a.astype('uint32')
 	a.tofile(trpt)
-	a=np.array([binsize])
+	a=np.array([par.binsize])
 	a=a.astype('uint32')
 	a.tofile(trpt)
 	trpt.close()
@@ -342,17 +339,24 @@ def get_angHist(trdir):
 	c.tofile(trpt)
 	trpt.close()
 	
+	#save par object as an xml file. mostly the same as the input file, but some variables can change, and leaves a permanent record.
+	outxml = trdir[0:-5] + "dpOUT.xml"
+	writexml.write_xml(par,outxml,'dpAnghist',trdir,[n_tr,np.nan,np.nan])
+	
 	print("get_angHist done at " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 	
 	
 if __name__ == "__main__":
 	# check input
-	if(len(sys.argv)==2):
+	if(len(sys.argv)==3):
 		trdir = sys.argv[1]
+		xmlname = sys.argv[2]
 	else:
-		print "usage: <trdir>"
+		print "usage: <trdir> <xmlname>"
 		exit()
 	if '.trdir' in trdir:
 		trdir = trdir[:-6]
+	if '.xml' in xmlname:
+		xmlname = xmlname[:-4]
 	
-	get_angHist(trdir)
+	get_angHist(trdir, xmlname)

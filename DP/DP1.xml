@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--Caution: only certain data types are accepted by parameters.py. In particular, do not use 'long-->
+<!--Accepted: int,int-array,float,float-array,string-array. Otherwise, assumed to be a string-->
+
+
+<!--Typical settings for dpAngHist-->
+<settings>
+	<!--which frames-->
+	<circfit_start type = 'int'>0</circfit_start>
+	<circfit_end type = 'int'>1999</circfit_end>
+	<hist_start type = "int">-1</hist_start> <!--set to -1 to use circfit_start value-->
+	<hist_end type = 'int'>-1</hist_end> <!--set to -1 to use circfit_end value-->
+
+	<!--other variables-->
+	<circcen_constr type = 'float'>3.0</circcen_constr> <!--constraint on circle fit radius-->
+	<binsize type = 'float'>10.0</binsize> <!--binsize for histogram. should evenly divide 360 deg-->
+
+	<allow_yoff type = 'int'>1</allow_yoff> <!--fit yoffset in gaussian, or constrained to 0? set to 0 to constrain to 0-->
+
+ 
+</settings>
