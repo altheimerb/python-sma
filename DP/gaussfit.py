@@ -11,8 +11,8 @@ def fitgauss(bin_edges, counts, guess):
 	"""unless guess[3] < 0, then offset set to zero"""
 	bincen = np.zeros(np.size(bin_edges)-1)
 	bincen[:] = bin_edges[0:np.size(bin_edges)-1]
-	binstep = bin_edges[1]-bin_edges[2]
-	bincen -= binstep/2
+	binstep = bin_edges[2]-bin_edges[1]
+	bincen += binstep/2
 	#print(bincen)
 	#print(counts)
 	#plt.plot(bincen, counts, label = 'data')
