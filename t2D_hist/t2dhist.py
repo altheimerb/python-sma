@@ -64,7 +64,8 @@ def get_2d_hist(trdir):
 			
 			#get 2d histogram
 			if(np.isnan(xcen) or np.isnan(ycen)):
-				curhist = np.nan
+				curhist = np.empty((resolution,resolution))
+				curhist[:] = np.nan
 			else:
 				curhist,x_edges,y_edges = np.histogram2d(xcur[~np.isnan(xcur)],ycur[~np.isnan(ycur)],bins=resolution,range=[[xcen-fov,xcen+fov],[ycen-fov,ycen+fov]])
 				
