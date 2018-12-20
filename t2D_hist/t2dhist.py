@@ -63,7 +63,10 @@ def get_2d_hist(trdir):
 			ycen = np.nanmean(ycur)
 			
 			#get 2d histogram
-			curhist,x_edges,y_edges = np.histogram2d(xcur[~np.isnan(xcur)],ycur[~np.isnan(ycur)],bins=resolution,range=[[xcen-fov,xcen+fov],[ycen-fov,ycen+fov]])
+			if(np.isnan(xcen) or np.isnan(ycen))
+				curhist = nan
+			else
+				curhist,x_edges,y_edges = np.histogram2d(xcur[~np.isnan(xcur)],ycur[~np.isnan(ycur)],bins=resolution,range=[[xcen-fov,xcen+fov],[ycen-fov,ycen+fov]])
 				
 			#save 2d histogram to open file
 			curhist = curhist.astype('uint32')
